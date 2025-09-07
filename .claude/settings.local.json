@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(move:*)",
+      "Bash(mv:*)",
+      "Bash(rm:*)",
+      "Bash(python:*)",
+      "Bash(sed:*)",
+      "Bash(git init:*)",
+      "Bash(touch:*)",
+      "Bash(git add:*)",
+      "Bash(psql:*)"
+    ],
+    "defaultMode": "acceptEdits"
+  }
+}

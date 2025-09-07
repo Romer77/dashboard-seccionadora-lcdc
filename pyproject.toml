@@ -1,0 +1,61 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dashboard-seccionadora-lcdc"
+version = "1.0.0"
+description = "Dashboard de análisis para seccionadora de MDF - LCDC Mendoza"
+authors = [
+    {name = "LCDC", email = "info@lcdc.com"}
+]
+requires-python = ">=3.8"
+license = {text = "MIT"}
+readme = "README.md"
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Manufacturing",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+]
+
+dependencies = [
+    "pandas==2.1.4",
+    "sqlalchemy==2.0.25",
+    "psycopg2-binary==2.9.9",
+    "python-dotenv==1.0.0",
+    "requests==2.31.0",
+    "streamlit==1.29.0",
+    "plotly==5.17.0",
+    "typing-extensions==4.9.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "flake8>=6.0.0",
+    "black>=23.0.0",
+    "isort>=5.12.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/lcdc/dashboard-seccionadora"
+Repository = "https://github.com/lcdc/dashboard-seccionadora"
+Issues = "https://github.com/lcdc/dashboard-seccionadora/issues"
+
+[tool.black]
+line-length = 120
+target-version = ['py38']
+
+[tool.isort]
+profile = "black"
+line_length = 120
+
+[tool.flake8]
+max-line-length = 120
+extend-ignore = ["E203", "W503"]

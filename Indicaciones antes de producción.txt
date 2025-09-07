@@ -1,0 +1,20 @@
+1. Aclaraciones y cálculo de nuevos KPIs
+
+a) Cada registro es la ejecución de un esquema. Ese esquema puede tener 1 o más placas (IMPORTANTISIMO PARA EL CÁLCULO DE PLACAS PROCESADAS), ese dato se encuentra en la tabla cortes_seccionadora[cantidad_placas]. 
+
+b) Todos los otros KPIs que surjan del cálculo de la cantidad placas (rendimiento, productividad, etc), deberán ser recalculados teniendo en cuenta el inciso a)
+
+c) Recalcular:
+
+- Tiempo total de la máquina funcionando. Se calcula desde el último timestamp del día (hora_fin más tarde del día con columna hora_fin) y se le resta el primer timestamp del día de la columna hora_inicio.
+- Tiempo total productivo. Se calculan los tiempos muertos entre registros (hora_fin - hora_inicio del registro siguiente. Siempre haciendo corte en el día que se analiza) y luego los tiempos muertos se suman y se le restan al tiempo total de la máquina funcionando.
+- Tasa de tiempo total productivo (tiempo total productivo dividido tiempo total de la máquina funcionado x 100)
+- Tasa de tiempo total improductivo.
+
+d) En la pestaña de "Análisis diario", el apartado de "Datos detallados", mostrar la tabla cortes_seccionadora con todos los registros según la fecha que se filtre y además agregar una columna calculada con el tiempo muerto por registro.
+
+2. Mejoras de UX/UI.
+
+a) Mantener paleta de colores de gráficos homogénea para todo el dashboard.
+b) Mejorar títulos de gráficos y gráficos
+c) Incluir elementos desplegables con textos explicativos en términos no técnicos del significado de cada KPI aplicado en la pestaña correspondiente.

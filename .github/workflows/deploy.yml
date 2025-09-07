@@ -1,0 +1,100 @@
+name: Deploy Dashboard Seccionadora
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.11]
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    
+    - name: Cache dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest pytest-cov flake8
+    
+    - name: Lint with flake8
+      run: |
+        # Stop the build if there are Python syntax errors or undefined names
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        # Exit-zero treats all errors as warnings
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=120 --statistics
+    
+    - name: Test import and basic functionality
+      run: |
+        python -c "
+        import sys
+        sys.path.append('.')
+        
+        # Test imports
+        try:
+            from config import Config, config
+            print('✅ Config import successful')
+        except Exception as e:
+            print(f'❌ Config import failed: {e}')
+            sys.exit(1)
+            
+        # Test configuration
+        try:
+            cfg = Config()
+            print(f'✅ Config instantiation successful - Environment: {cfg.environment}')
+        except Exception as e:
+            print(f'❌ Config instantiation failed: {e}')
+            sys.exit(1)
+        "
+    
+    - name: Validate requirements.txt
+      run: |
+        python -c "
+        import pkg_resources
+        with open('requirements.txt', 'r') as f:
+            requirements = f.read().strip().split('\n')
+        
+        print('📦 Validating dependencies:')
+        for req in requirements:
+            if req.strip() and not req.strip().startswith('#'):
+                try:
+                    pkg_resources.Requirement.parse(req)
+                    print(f'  ✅ {req}')
+                except Exception as e:
+                    print(f'  ❌ {req}: {e}')
+                    raise
+        print('✅ All requirements are valid')
+        "
+
+  deploy-notification:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Deployment Success Notification
+      run: |
+        echo "🎉 Tests passed! Ready for Streamlit Cloud deployment"
+        echo "📋 Next steps:"
+        echo "  1. Push changes to main branch"
+        echo "  2. Streamlit Cloud will auto-deploy"
+        echo "  3. Configure secrets in Streamlit Cloud dashboard"
+        echo "  4. Verify deployment at your Streamlit app URL"
