@@ -1,9 +1,9 @@
 # Core data processing
 pandas==2.1.4
 sqlalchemy==2.0.25
-psycopg2-binary==2.9.9
+psycopg2-binary==2.9.7
 
-# Configuration and utilities
+# Configuration and utilities  
 python-dotenv==1.0.0
 requests==2.31.0
 
@@ -11,5 +11,5 @@ requests==2.31.0
 streamlit==1.29.0
 plotly==5.17.0
 
-# Additional dependencies for production stability
+# Additional dependencies
 typing-extensions==4.9.0
