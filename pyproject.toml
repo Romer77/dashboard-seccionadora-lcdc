@@ -21,10 +21,12 @@ classifiers = [
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
 ]
 
 dependencies = [
-    "pandas==2.1.4",
+    "pandas==2.2.3",
     "sqlalchemy==2.0.25",
     "psycopg2-binary==2.9.9",
     "python-dotenv==1.0.0",
