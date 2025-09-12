@@ -1,47 +1,65 @@
-# Crear nuevo archivo: database.py
 import streamlit as st
 import sqlalchemy
 from sqlalchemy import create_engine
+import socket
+from contextlib import contextmanager
 
 def get_database_connection():
-    """Usar IP directa para evitar DNS issues"""
-    
+    """Obtiene URL con timeout"""
     try:
-        # Obtener string original
-        original_url = st.secrets["PG_CONN"]
-        
-        # Reemplazar hostname por IP
-        # db.cyjracwepjzzeygfpbxr.supabase.co → IP directa
-        ip_url = original_url.replace(
-            "db.cyjracwepjzzeygfpbxr.supabase.co",
-            "54.220.195.48"  # IP de tu instancia Supabase
-        )
-        
-        st.info(f"🔄 Usando IP directa para evitar DNS issues")
-        return ip_url
+        return st.secrets["PG_CONN"]
     except Exception as e:
-        st.error(f"Error accediendo a PG_CONN: {e}")
+        st.error(f"Error obteniendo PG_CONN: {e}")
         return None
 
+@contextmanager
+def timeout_context(seconds=10):
+    """Context manager para timeout"""
+    import signal
+    def timeout_handler(signum, frame):
+        raise TimeoutError(f"Operación timeout después de {seconds} segundos")
+    
+    signal.signal(signal.SIGALRM, timeout_handler)
+    signal.alarm(seconds)
+    try:
+        yield
+    finally:
+        signal.alarm(0)
+
 def create_db_engine():
-    """Crea engine de SQLAlchemy"""
+    """Crea engine con timeout estricto"""
     database_url = get_database_connection()
     
     if not database_url:
-        st.error("❌ No se pudo obtener DATABASE_URL")
         return None
     
     try:
-        engine = create_engine(database_url)
-        # Testear conexión
-        with engine.connect() as conn:
-            conn.execute(sqlalchemy.text("SELECT 1"))
-        st.success("✅ Conexión a base de datos exitosa")
-        return engine
+        # Timeout de 5 segundos máximo
+        with timeout_context(5):
+            engine = create_engine(
+                database_url,
+                connect_args={
+                    "connect_timeout": 5,
+                    "sslmode": "require"
+                },
+                pool_timeout=5,
+                pool_pre_ping=False  # Evitar ping adicional
+            )
+            
+            # Test rápido de conexión
+            with engine.connect() as conn:
+                conn.execute(sqlalchemy.text("SELECT 1"))
+            
+            st.success("✅ Conexión DB exitosa")
+            return engine
+            
+    except TimeoutError:
+        st.error("❌ Timeout conectando a base de datos")
+        return None
     except Exception as e:
-        st.error(f"❌ Error conectando a base de datos: {e}")
+        st.error(f"❌ Error DB: {str(e)[:100]}...")
         return None
 
-# Variables globales
+# Crear engine al inicio
 DATABASE_URL = get_database_connection()
 ENGINE = create_db_engine() if DATABASE_URL else None
