@@ -175,8 +175,4 @@ def show_jobs_analysis():
     st.info("Función en desarrollo - próximamente disponible")
 
 # EJECUTAR EL DASHBOARD
-if __name__ == "__main__":
-    main()
-
-# También ejecutar directamente en Streamlit Cloud
 main()
