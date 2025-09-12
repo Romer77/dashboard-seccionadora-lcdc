@@ -1,7 +1,12 @@
 import streamlit as st
 
-# TEST DE CONEXIÓN SIMPLE
-st.write("🔍 **Test de Conexión:**")
+# CONFIGURAR PÁGINA PRIMERO (debe ser lo primero siempre)
+st.set_page_config(
+    page_title="Dashboard Seccionadora - LCDC",
+    page_icon="🏭",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
 
 # Import con manejo de error
 try:
@@ -11,8 +16,6 @@ try:
         st.error("❌ No se pudo conectar a la base de datos")
         st.info("Verifica la configuración de secrets")
         st.stop()
-    else:
-        st.success("✅ Base de datos conectada correctamente")
         
 except ImportError as e:
     st.error(f"❌ Error importando database module: {e}")
@@ -21,9 +24,7 @@ except Exception as e:
     st.error(f"❌ Error de configuración: {e}")
     st.stop()
 
-st.write("---")
-
-# AHORA EL DASHBOARD COMPLETO
+# IMPORTS PARA EL DASHBOARD
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
@@ -36,14 +37,6 @@ from typing import Optional
 # Configurar logging básico
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("seccionadora_dashboard")
-
-# Configurar página con configuración básica
-st.set_page_config(
-    page_title="Dashboard Seccionadora - LCDC",
-    page_icon="🏭",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
 
 # Paleta de colores corporativa LCDC
 COLORS = {
@@ -181,5 +174,9 @@ def show_jobs_analysis():
     st.header("🔧 Análisis por Jobs")
     st.info("Función en desarrollo - próximamente disponible")
 
+# EJECUTAR EL DASHBOARD
 if __name__ == "__main__":
     main()
+
+# También ejecutar directamente en Streamlit Cloud
+main()
