@@ -6,7 +6,10 @@ st.write(f"Streamlit version: {st.__version__}")
 
 # Importar módulo de database simplificado
 try:
-    from database import get_database_connection, create_db_engine
+    from database import get_database_connection, create_db_engine, DATABASE_URL
+    import socket
+    import sqlalchemy
+    
     st.write("✅ Módulo database importado correctamente")
     
     # Test conexión directa
@@ -14,7 +17,42 @@ try:
     if db_url:
         st.write(f"✅ DATABASE_URL obtenida: {db_url[:50]}...")
         
-        # Test engine
+        # Test de conectividad de red
+        st.write("🌐 **Test de conectividad:**")
+        try:
+            # Extraer host de la conexión
+            host = "db.cyjracwepjzzeygfpbxr.supabase.co"
+            port = 5432
+            
+            # Test básico de socket
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            sock.settimeout(10)
+            result = sock.connect_ex((host, port))
+            sock.close()
+            
+            if result == 0:
+                st.success("✅ Puerto 5432 alcanzable")
+            else:
+                st.error(f"❌ Puerto 5432 no alcanzable (código: {result})")
+                
+        except Exception as e:
+            st.error(f"❌ Error de conectividad: {e}")
+        
+        # Test con parámetros SSL
+        st.write("🔒 **Test con SSL:**")
+        try:
+            # Conexión con SSL requerido
+            ssl_url = DATABASE_URL + "?sslmode=require"
+            engine_ssl = sqlalchemy.create_engine(ssl_url, connect_args={"connect_timeout": 10})
+            
+            with engine_ssl.connect() as conn:
+                result = conn.execute(sqlalchemy.text("SELECT version()")).fetchone()
+            st.success(f"✅ Conexión SSL exitosa: {result[0][:50]}...")
+            
+        except Exception as e:
+            st.error(f"❌ Error SSL: {e}")
+        
+        # Test engine original
         engine = create_db_engine()
         if engine:
             st.write("✅ Engine creado y testeado exitosamente")
