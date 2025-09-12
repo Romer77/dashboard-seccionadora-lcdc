@@ -259,16 +259,271 @@ def show_production_analysis():
                 help="Porcentaje del tiempo que la máquina estuvo produciendo"
             )
             
+        # ==================== SECCIÓN 2: ANÁLISIS POR MATERIAL ====================
+        st.markdown("---")
+        st.subheader("📏 Análisis por Tipos de Material (Espesores)")
+        
+        thickness_summary = load_data(f"""
+            SELECT 
+                espesor_mm,
+                COUNT(*) as total_esquemas,
+                SUM(cantidad_placas) as total_placas,
+                AVG(duracion_segundos) as duracion_promedio_seg
+            FROM cortes_seccionadora
+            WHERE fecha_proceso BETWEEN '{fecha_inicio}' AND '{fecha_fin}'
+            GROUP BY espesor_mm
+            ORDER BY total_placas DESC
+        """)
+        
+        if not thickness_summary.empty:
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                # Pie chart de distribución
+                fig_pie = px.pie(
+                    thickness_summary, 
+                    values='total_placas', 
+                    names='espesor_mm',
+                    title='📊 Distribución de Placas por Espesor',
+                    color_discrete_sequence=[COLORS['primary'], COLORS['accent'], COLORS['secondary'], COLORS['info']]
+                )
+                fig_pie.update_traces(textposition='inside', textinfo='percent+label')
+                fig_pie.update_layout(height=400, title_font_size=14, title_x=0.5)
+                st.plotly_chart(fig_pie, use_container_width=True)
+            
+            with col2:
+                # Bar chart de tiempos
+                thickness_summary['duracion_min'] = thickness_summary['duracion_promedio_seg'] / 60
+                fig_bar = px.bar(
+                    thickness_summary, 
+                    x='espesor_mm', 
+                    y='duracion_min',
+                    title='⏱️ Tiempo Promedio por Esquema según Espesor',
+                    labels={'espesor_mm': 'Espesor (mm)', 'duracion_min': 'Tiempo Promedio (min)'},
+                    color='duracion_min',
+                    color_continuous_scale=[[0, COLORS['info']], [1, COLORS['success']]]
+                )
+                fig_bar.update_layout(height=400, title_font_size=14, title_x=0.5, coloraxis_showscale=False)
+                st.plotly_chart(fig_bar, use_container_width=True)
+        
+        # ==================== SECCIÓN 3: ANÁLISIS DE RELACIONES ====================
+        st.markdown("---")
+        st.subheader("🔍 Análisis de Relaciones Entre Indicadores")
+        
+        # Datos diarios para análisis
+        daily_data = load_data(f"""
+            WITH daily_analysis AS (
+                SELECT 
+                    fecha_proceso,
+                    COUNT(*) as total_esquemas,
+                    SUM(cantidad_placas) as total_placas,
+                    AVG(duracion_segundos) as duracion_promedio_seg,
+                    SUM(duracion_segundos) / 3600.0 as tiempo_productivo_horas
+                FROM cortes_seccionadora
+                WHERE fecha_proceso BETWEEN '{fecha_inicio}' AND '{fecha_fin}'
+                GROUP BY fecha_proceso
+            )
+            SELECT 
+                *,
+                total_placas / tiempo_productivo_horas as placas_por_hora
+            FROM daily_analysis
+            ORDER BY fecha_proceso
+        """)
+        
+        if not daily_data.empty and len(daily_data) > 1:
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                # Scatter plot tiempo vs eficiencia
+                fig_scatter1 = px.scatter(
+                    daily_data, 
+                    x='tiempo_productivo_horas', 
+                    y='placas_por_hora',
+                    size='total_placas',
+                    title='🔄 Tiempo Productivo vs Eficiencia',
+                    labels={
+                        'tiempo_productivo_horas': 'Horas Productivas', 
+                        'placas_por_hora': 'Placas/Hora',
+                        'total_placas': 'Total Placas'
+                    },
+                    color_discrete_sequence=[COLORS['primary']],
+                    hover_data=['fecha_proceso', 'total_esquemas']
+                )
+                fig_scatter1.update_layout(height=400)
+                st.plotly_chart(fig_scatter1, use_container_width=True)
+            
+            with col2:
+                # Scatter plot esquemas vs placas
+                fig_scatter2 = px.scatter(
+                    daily_data,
+                    x='total_esquemas',
+                    y='total_placas',
+                    size='tiempo_productivo_horas',
+                    title='📊 Esquemas vs Placas Procesadas',
+                    labels={
+                        'total_esquemas': 'Total Esquemas',
+                        'total_placas': 'Total Placas',
+                        'tiempo_productivo_horas': 'Horas Productivas'
+                    },
+                    color_discrete_sequence=[COLORS['secondary']],
+                    hover_data=['fecha_proceso']
+                )
+                fig_scatter2.update_layout(height=400)
+                st.plotly_chart(fig_scatter2, use_container_width=True)
     else:
         st.warning("⚠️ No hay datos para el período seleccionado")
 
 def show_thickness_analysis():
     st.header("⚡ Análisis por Espesores de Material")
-    st.info("Función en desarrollo - próximamente disponible")
+    create_kpi_explanation(
+        "Análisis por Espesores",
+        "Comparación detallada del rendimiento de la máquina según el tipo de material procesado. Cada espesor tiene características diferentes que afectan los tiempos de corte y la eficiencia."
+    )
+    
+    # Datos por espesor usando tabla agregada
+    thickness_data = load_data("""
+        SELECT 
+            espesor_mm,
+            COUNT(*) as total_cortes,
+            SUM(cantidad_placas) as total_placas,
+            COUNT(DISTINCT job_key) as jobs_unicos,
+            AVG(duracion_segundos) as duracion_promedio_seg,
+            AVG(largo_mm * ancho_mm) as area_promedio_mm2
+        FROM cortes_seccionadora 
+        GROUP BY espesor_mm 
+        ORDER BY espesor_mm
+    """)
+    
+    if not thickness_data.empty:
+        # Métricas generales
+        st.subheader("📊 Resumen por Material")
+        
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.metric("Espesores Diferentes", f"{len(thickness_data)}")
+        with col2:
+            most_used = thickness_data.loc[thickness_data['total_placas'].idxmax(), 'espesor_mm']
+            st.metric("Espesor Más Usado", f"{most_used} mm")
+        with col3:
+            fastest = thickness_data.loc[thickness_data['duracion_promedio_seg'].idxmin(), 'espesor_mm']
+            st.metric("Esquemas Más Rápidos", f"{fastest} mm")
+        
+        # Gráficos comparativos
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            fig_volume = px.bar(thickness_data, x='espesor_mm', y='total_placas',
+                               title='📊 Total de Placas por Espesor',
+                               labels={'espesor_mm': 'Espesor (mm)', 'total_placas': 'Total Placas'},
+                               color='total_placas',
+                               color_continuous_scale=[[0, COLORS['info']], [1, COLORS['primary']]])
+            fig_volume.update_layout(coloraxis_showscale=False)
+            st.plotly_chart(fig_volume, use_container_width=True)
+        
+        with col2:
+            fig_efficiency = px.bar(thickness_data, x='espesor_mm', y='duracion_promedio_seg',
+                                   title='⏱️ Duración Promedio por Espesor',
+                                   labels={'espesor_mm': 'Espesor (mm)', 'duracion_promedio_seg': 'Segundos'},
+                                   color='duracion_promedio_seg',
+                                   color_continuous_scale=[[0, COLORS['success']], [1, COLORS['warning']]])
+            fig_efficiency.update_layout(coloraxis_showscale=False)
+            st.plotly_chart(fig_efficiency, use_container_width=True)
+    else:
+        st.warning("No hay datos de espesores disponibles")
 
 def show_jobs_analysis():
     st.header("🔧 Análisis por Jobs")
-    st.info("Función en desarrollo - próximamente disponible")
+    create_kpi_explanation(
+        "Análisis por Jobs",
+        "Análisis detallado de cada tipo de trabajo procesado en la máquina. Cada 'job' representa un diseño o tipo de corte específico que puede repetirse en múltiples esquemas."
+    )
+    
+    # Filtros
+    col1, col2 = st.columns(2)
+    with col1:
+        top_n = st.selectbox("Mostrar top:", [10, 20, 50, 100], index=1)
+    with col2:
+        sort_by = st.selectbox("Ordenar por:", 
+                              ["Total Placas", "Total Esquemas", "Tiempo Total", "Duración Promedio"],
+                              index=0)
+    
+    # Mapeo de opciones a columnas
+    sort_mapping = {
+        "Total Placas": "total_placas",
+        "Total Esquemas": "total_cortes", 
+        "Tiempo Total": "tiempo_total_seg",
+        "Duración Promedio": "duracion_promedio_seg"
+    }
+    
+    # Datos por job
+    jobs_data = load_data(f"""
+        SELECT 
+            job_key,
+            COUNT(*) as total_cortes,
+            SUM(cantidad_placas) as total_placas,
+            AVG(duracion_segundos) as duracion_promedio_seg,
+            SUM(duracion_segundos) as tiempo_total_seg,
+            MIN(fecha_proceso) as primera_fecha,
+            MAX(fecha_proceso) as ultima_fecha,
+            AVG(largo_mm) as largo_mm,
+            AVG(ancho_mm) as ancho_mm,
+            AVG(espesor_mm) as espesor_mm
+        FROM cortes_seccionadora 
+        GROUP BY job_key 
+        ORDER BY {sort_mapping[sort_by]} DESC 
+        LIMIT {top_n}
+    """)
+    
+    if not jobs_data.empty:
+        # Métricas generales
+        st.subheader("📊 Resumen de Jobs")
+        
+        col1, col2, col3, col4 = st.columns(4)
+        with col1:
+            st.metric("Jobs Mostrados", f"{len(jobs_data)}")
+        with col2:
+            st.metric("Placas Totales", f"{jobs_data['total_placas'].sum():,}")
+        with col3:
+            st.metric("Promedio Placas/Job", f"{jobs_data['total_placas'].mean():.1f}")
+        with col4:
+            total_hours = jobs_data['tiempo_total_seg'].sum() / 3600
+            st.metric("Tiempo Total", f"{total_hours:.1f}h")
+        
+        # Gráfico de top jobs
+        st.subheader(f"📈 Top {min(15, len(jobs_data))} Jobs por {sort_by}")
+        
+        # Truncar nombres largos para mejor visualización
+        display_jobs = jobs_data.head(15).copy()
+        display_jobs['job_key_short'] = display_jobs['job_key'].str[-30:]
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            fig_top_jobs = px.bar(display_jobs, 
+                                 x='total_placas', 
+                                 y='job_key_short',
+                                 orientation='h',
+                                 title=f'📆 Top Jobs por Total de Placas',
+                                 labels={'total_placas': 'Total Placas', 'job_key_short': 'Job'},
+                                 color='total_placas',
+                                 color_continuous_scale=[[0, COLORS['info']], [1, COLORS['primary']]])
+            fig_top_jobs.update_layout(height=600, coloraxis_showscale=False)
+            st.plotly_chart(fig_top_jobs, use_container_width=True)
+        
+        with col2:
+            fig_duration = px.bar(display_jobs, 
+                                 x='duracion_promedio_seg', 
+                                 y='job_key_short',
+                                 orientation='h',
+                                 title='⏱️ Duración Promedio por Corte (seg)',
+                                 labels={'duracion_promedio_seg': 'Duración Promedio (seg)', 'job_key_short': 'Job'},
+                                 color='duracion_promedio_seg',
+                                 color_continuous_scale=[[0, COLORS['success']], [1, COLORS['warning']]])
+            fig_duration.update_layout(height=600, coloraxis_showscale=False)
+            st.plotly_chart(fig_duration, use_container_width=True)
+    
+    else:
+        st.warning("No hay datos de jobs disponibles")
 
 # EJECUTAR EL DASHBOARD
 main()
