@@ -18,33 +18,47 @@ def get_database_connection():
         return None
 
 def create_db_engine():
-    """Crea engine optimizado para pooler"""
+    """Crea engine con diagnóstico completo"""
     database_url = get_database_connection()
     
     if not database_url:
         return None
     
+    # DEBUG: Mostrar que URL está usando (sin password)
+    safe_url = database_url.replace(database_url.split('@')[0].split(':')[-1], "***")
+    st.write(f"🔗 **URL de conexión:** {safe_url}")
+    
+    # Verificar si es pooler o direct connection
+    if "pooler.supabase.com" in database_url:
+        st.success("✅ Usando Transaction Pooler (IPv4)")
+    elif "db.cyjracwepjzzeygfpbxr" in database_url:
+        st.warning("⚠️ Usando Direct Connection (IPv6) - Cambiar a pooler")
+    
     try:
         engine = create_engine(
             database_url,
-            # Configuración para pooler
             pool_pre_ping=True,
             pool_recycle=300,
-            pool_timeout=20,
-            max_overflow=0,
-            pool_size=5,
             connect_args={"sslmode": "require"}
         )
         
-        # Test de conexión
         with engine.connect() as conn:
             result = conn.execute(sqlalchemy.text("SELECT version()")).fetchone()
-            st.success(f"✅ Conexión exitosa via pooler: PostgreSQL detectado")
         
+        st.success("✅ Conexión exitosa a PostgreSQL")
         return engine
         
     except Exception as e:
-        st.error(f"❌ Error conectando via pooler: {e}")
+        st.error(f"❌ Error específico: {str(e)}")
+        # Intentar sin SSL como fallback
+        try:
+            engine_no_ssl = create_engine(database_url.replace("?sslmode=require", ""))
+            with engine_no_ssl.connect() as conn:
+                conn.execute(sqlalchemy.text("SELECT 1"))
+            st.warning("⚠️ Conexión exitosa sin SSL")
+            return engine_no_ssl
+        except Exception as e2:
+            st.error(f"❌ Error sin SSL: {str(e2)}")
         return None
 
 DATABASE_URL = get_database_connection()
