@@ -20,8 +20,8 @@ try:
         # Test de conectividad de red
         st.write("🌐 **Test de conectividad:**")
         try:
-            # Extraer host de la conexión
-            host = "db.cyjracwepjzzeygfpbxr.supabase.co"
+            # Usar IP directa para test
+            host = "54.220.195.48"  # IP directa de Supabase
             port = 5432
             
             # Test básico de socket

@@ -4,12 +4,21 @@ import sqlalchemy
 from sqlalchemy import create_engine
 
 def get_database_connection():
-    """Obtiene conexión directa sin config.py"""
+    """Usar IP directa para evitar DNS issues"""
     
-    # Acceso directo a secrets (sabemos que funciona)
     try:
-        database_url = st.secrets["PG_CONN"]
-        return database_url
+        # Obtener string original
+        original_url = st.secrets["PG_CONN"]
+        
+        # Reemplazar hostname por IP
+        # db.cyjracwepjzzeygfpbxr.supabase.co → IP directa
+        ip_url = original_url.replace(
+            "db.cyjracwepjzzeygfpbxr.supabase.co",
+            "54.220.195.48"  # IP de tu instancia Supabase
+        )
+        
+        st.info(f"🔄 Usando IP directa para evitar DNS issues")
+        return ip_url
     except Exception as e:
         st.error(f"Error accediendo a PG_CONN: {e}")
         return None
