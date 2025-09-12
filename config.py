@@ -44,10 +44,11 @@ class Config:
             if os.getenv(indicator):
                 return True
                 
-        # Método secundario: intentar acceder a secrets solo si las variables indican Streamlit Cloud
+        # Método secundario: verificar si secrets está disponible
         try:
-            import streamlit.runtime.secrets
-            if hasattr(st, 'secrets') and len(st.secrets._secrets) > 0:
+            if hasattr(st, 'secrets'):
+                # Intentar acceder a secrets sin usar atributos privados
+                st.secrets.get("_test", None)
                 return True
         except Exception:
             pass
