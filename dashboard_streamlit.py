@@ -1,31 +1,30 @@
 import streamlit as st
 
-# DEBUG DIRECTO DE SECRETS
-st.write("🔍 **DEBUG COMPLETO:**")
+# DEBUG Y TEST DE CONEXIÓN DIRECTA
+st.write("🔍 **DEBUG Y TEST DE CONEXIÓN:**")
 st.write(f"Streamlit version: {st.__version__}")
 
-# Verificar si secrets existe
-if hasattr(st, 'secrets'):
-    st.write("✅ st.secrets existe")
+# Importar módulo de database simplificado
+try:
+    from database import get_database_connection, create_db_engine
+    st.write("✅ Módulo database importado correctamente")
     
-    # Listar todas las keys disponibles
-    try:
-        keys = list(st.secrets.keys())
-        st.write(f"Keys disponibles: {keys}")
-    except Exception as e:
-        st.write(f"Error listando keys: {e}")
-    
-    # Intentar acceder a PG_CONN directamente
-    try:
-        pg_conn = st.secrets['PG_CONN']
-        st.write(f"✅ PG_CONN encontrada: {pg_conn[:30]}...")
-    except KeyError:
-        st.write("❌ PG_CONN no existe en secrets")
-    except Exception as e:
-        st.write(f"❌ Error accediendo PG_CONN: {e}")
-
-else:
-    st.write("❌ st.secrets NO existe")
+    # Test conexión directa
+    db_url = get_database_connection()
+    if db_url:
+        st.write(f"✅ DATABASE_URL obtenida: {db_url[:50]}...")
+        
+        # Test engine
+        engine = create_db_engine()
+        if engine:
+            st.write("✅ Engine creado y testeado exitosamente")
+        else:
+            st.write("❌ Error creando engine")
+    else:
+        st.write("❌ No se pudo obtener DATABASE_URL")
+        
+except Exception as e:
+    st.error(f"❌ Error importando database module: {e}")
 
 st.write("---")
 
@@ -39,14 +38,26 @@ from datetime import datetime, timedelta
 import logging
 from typing import Optional
 
-# Importar configuración personalizada
-from config import config, setup_logging, get_logger
+# Importar conexión de base de datos simplificada
+from database import DATABASE_URL, ENGINE
 
-# Configurar logging
-logger = setup_logging()
+# Verificación inicial
+if not DATABASE_URL or not ENGINE:
+    st.error("❌ Configuración de base de datos fallida")
+    st.stop()
 
-# Configurar página con configuración centralizada
-st.set_page_config(**config.get_streamlit_config())
+# Configurar logging básico
+import logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger("seccionadora_dashboard")
+
+# Configurar página con configuración básica
+st.set_page_config(
+    page_title="Dashboard Seccionadora - LCDC",
+    page_icon="🏭",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
 
 # Paleta de colores corporativa LCDC
 COLORS = {
@@ -75,35 +86,10 @@ def format_time_duration(seconds: float) -> str:
     return f"{hours}h {minutes}min"
 
 def get_connection():
-    """Crear conexión a PostgreSQL con configuración robusta"""
-    if not config.validate_config():
-        logger.error("Configuración inválida")
-        return None
-        
-    try:
-        db_config = config.get_database_config()
-        engine = create_engine(
-            db_config["url"],
-            pool_size=db_config["pool_size"],
-            max_overflow=db_config["max_overflow"],
-            pool_timeout=db_config["pool_timeout"],
-            pool_recycle=db_config["pool_recycle"]
-        )
-        
-        # Probar la conexión
-        with engine.connect() as conn:
-            conn.execute(text("SELECT 1"))
-            
-        logger.info(f"Conexión exitosa a base de datos - Entorno: {config.environment}")
-        return engine
-        
-    except Exception as e:
-        logger.error(f"Error conectando a la base de datos: {e}")
-        st.error(f"❌ Error de conexión: {e}")
-        st.info("💡 Verifica la configuración de la base de datos")
-        return None
+    """Obtener conexión a PostgreSQL usando ENGINE global"""
+    return ENGINE
 
-@st.cache_data(ttl=config.cache_ttl)
+@st.cache_data(ttl=300)  # 5 minutos
 def load_data(query: str) -> pd.DataFrame:
     """Cargar datos desde PostgreSQL con manejo de errores robusto"""
     logger.debug(f"Ejecutando consulta: {query[:100]}...")
@@ -139,18 +125,15 @@ def main():
     with col1:
         st.title("🏭 Dashboard Seccionadora - LCDC Mendoza")
     with col2:
-        st.caption(f"Entorno: {config.environment.upper()}")
+        st.caption("Entorno: STREAMLIT_CLOUD")
         if st.button("🔄 Limpiar Cache", help="Limpiar cache de datos"):
             st.cache_data.clear()
             st.success("Cache limpiado exitosamente")
             
     st.markdown("---")
     
-    # Validar configuración antes de continuar
-    if not config.validate_config():
-        st.error("❌ Error de configuración del sistema")
-        st.info("🔧 Revisa tu archivo .env o configuración de secrets")
-        st.stop()
+    # Configuración ya validada al inicio del archivo
+    # La conexión ENGINE ya fue testeada en database.py
         
     # Validar conexión a base de datos solo al cargar datos
     # No bloquear la carga inicial de la interfaz
