@@ -1,4 +1,35 @@
 import streamlit as st
+
+# DEBUG DIRECTO DE SECRETS
+st.write("🔍 **DEBUG COMPLETO:**")
+st.write(f"Streamlit version: {st.__version__}")
+
+# Verificar si secrets existe
+if hasattr(st, 'secrets'):
+    st.write("✅ st.secrets existe")
+    
+    # Listar todas las keys disponibles
+    try:
+        keys = list(st.secrets.keys())
+        st.write(f"Keys disponibles: {keys}")
+    except Exception as e:
+        st.write(f"Error listando keys: {e}")
+    
+    # Intentar acceder a PG_CONN directamente
+    try:
+        pg_conn = st.secrets['PG_CONN']
+        st.write(f"✅ PG_CONN encontrada: {pg_conn[:30]}...")
+    except KeyError:
+        st.write("❌ PG_CONN no existe en secrets")
+    except Exception as e:
+        st.write(f"❌ Error accediendo PG_CONN: {e}")
+
+else:
+    st.write("❌ st.secrets NO existe")
+
+st.write("---")
+
+import streamlit as st
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
