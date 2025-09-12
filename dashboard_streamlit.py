@@ -159,10 +159,106 @@ def show_production_analysis():
         WHERE fecha_proceso BETWEEN '{fecha_inicio}' AND '{fecha_fin}'
     """)
     
-    # Mostrar mensaje si hay datos
-    if not total_data.empty:
-        st.success("✅ Datos cargados correctamente")
-        st.info(f"Período: {fecha_inicio} a {fecha_fin}")
+    # Calcular métricas de tiempo
+    tiempo_data = load_data(f"""
+        WITH daily_machine_time AS (
+            SELECT 
+                fecha_proceso,
+                MIN(hora_inicio) as primer_inicio,
+                MAX(hora_fin) as ultimo_fin,
+                EXTRACT(EPOCH FROM (MAX(hora_fin) - MIN(hora_inicio))) as tiempo_total_maquina_seg
+            FROM cortes_seccionadora
+            WHERE fecha_proceso BETWEEN '{fecha_inicio}' AND '{fecha_fin}'
+            GROUP BY fecha_proceso
+        ),
+        daily_productive_time AS (
+            SELECT 
+                fecha_proceso,
+                SUM(duracion_segundos) as tiempo_productivo_seg
+            FROM cortes_seccionadora
+            WHERE fecha_proceso BETWEEN '{fecha_inicio}' AND '{fecha_fin}'
+            GROUP BY fecha_proceso
+        )
+        SELECT 
+            SUM(dt.tiempo_total_maquina_seg) as tiempo_total_maquina_segundos,
+            SUM(dp.tiempo_productivo_seg) as tiempo_total_productivo_segundos,
+            CASE WHEN SUM(dt.tiempo_total_maquina_seg) > 0 
+                 THEN (SUM(dp.tiempo_productivo_seg) / SUM(dt.tiempo_total_maquina_seg)) * 100 
+                 ELSE 0 
+            END as tasa_tiempo_productivo
+        FROM daily_machine_time dt
+        JOIN daily_productive_time dp ON dt.fecha_proceso = dp.fecha_proceso
+    """)
+    
+    if not total_data.empty and not tiempo_data.empty:
+        data = total_data.iloc[0]
+        tiempo = tiempo_data.iloc[0]
+        
+        with col1:
+            st.metric(
+                "🔧 Total Esquemas",
+                f"{int(data['total_esquemas']):,}",
+                help="Esquemas de trabajo ejecutados"
+            )
+            create_kpi_explanation(
+                "Total Esquemas",
+                "Cada esquema representa un programa de corte específico. Un esquema puede procesar una o varias placas según el diseño."
+            )
+        
+        with col2:
+            st.metric(
+                "📦 Placas Procesadas",
+                f"{int(data['total_placas_procesadas']):,}",
+                help="Total de placas de MDF procesadas"
+            )
+        
+        with col3:
+            st.metric(
+                "⚪ Placas Blancas 18mm",
+                f"{int(data['placas_blancas_18mm']):,}",
+                help="Placas de MDF blanco de 18mm"
+            )
+        
+        with col4:
+            promedio_placas_dia = data['total_placas_procesadas'] / data['dias_activos']
+            st.metric(
+                "📊 Promedio Placas/Día",
+                f"{promedio_placas_dia:.1f}",
+                help="Capacidad diaria promedio"
+            )
+        
+        # Segunda fila de KPIs
+        col1, col2, col3, col4 = st.columns(4)
+        
+        with col1:
+            promedio_min_esquema = data['duracion_promedio_seg'] / 60
+            st.metric(
+                "⏱️ Min/Esquema",
+                f"{promedio_min_esquema:.1f} min",
+                help="Tiempo promedio por esquema"
+            )
+        
+        with col2:
+            st.metric(
+                "🕐 Tiempo Total Máquina",
+                f"{format_time_duration(tiempo['tiempo_total_maquina_segundos'])}",
+                help="Tiempo total desde primer a último trabajo"
+            )
+        
+        with col3:
+            st.metric(
+                "⚡ Tiempo Productivo",
+                f"{format_time_duration(tiempo['tiempo_total_productivo_segundos'])}",
+                help="Tiempo real trabajando (sin tiempos muertos)"
+            )
+        
+        with col4:
+            st.metric(
+                "📈 Tasa Productividad",
+                f"{tiempo['tasa_tiempo_productivo']:.1f}%",
+                help="Porcentaje del tiempo que la máquina estuvo produciendo"
+            )
+            
     else:
         st.warning("⚠️ No hay datos para el período seleccionado")
 
