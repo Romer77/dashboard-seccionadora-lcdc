@@ -38,17 +38,29 @@ from typing import Optional
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("seccionadora_dashboard")
 
-# Paleta de colores corporativa LCDC
+# Paleta de colores unificada - Tonalidades azules
 COLORS = {
-    'primary': '#2E86AB',      # Azul corporativo
-    'secondary': '#A23B72',    # Magenta corporativo  
-    'accent': '#F18F01',       # Naranja vibrante
-    'success': '#C73E1D',      # Rojo corporativo
-    'info': '#85C1E9',         # Azul claro
-    'warning': '#F7B801',      # Amarillo/dorado
-    'light': '#F8F9FA',        # Gris muy claro
-    'dark': '#2C3E50',         # Gris oscuro
+    'primary': '#2E86AB',      # Azul corporativo principal
+    'secondary': '#1B4F72',    # Azul oscuro
+    'accent': '#5DADE2',       # Azul claro
+    'success': '#3498DB',      # Azul medio
+    'info': '#85C1E9',         # Azul muy claro
+    'warning': '#2980B9',      # Azul fuerte
+    'light': '#AED6F1',        # Azul pastel
+    'dark': '#154360',         # Azul muy oscuro
 }
+
+# Gradientes para KPI cards - Tonalidades azules unificadas
+KPI_GRADIENTS = [
+    "linear-gradient(90deg, #1B4F72 0%, #2E86AB 100%)",
+    "linear-gradient(90deg, #2E86AB 0%, #5DADE2 100%)", 
+    "linear-gradient(90deg, #5DADE2 0%, #85C1E9 100%)",
+    "linear-gradient(90deg, #3498DB 0%, #2980B9 100%)",
+    "linear-gradient(90deg, #2980B9 0%, #1B4F72 100%)",
+    "linear-gradient(90deg, #154360 0%, #1B4F72 100%)",
+    "linear-gradient(90deg, #85C1E9 0%, #5DADE2 100%)",
+    "linear-gradient(90deg, #2E86AB 0%, #3498DB 100%)",
+]
 
 def create_kpi_explanation(kpi_name: str, explanation: str):
     """Crear elemento desplegable explicativo para KPIs"""
@@ -197,7 +209,7 @@ def show_production_analysis():
         with col1:
             with st.container():
                 st.markdown("""
-                <div style="background: linear-gradient(90deg, #2E86AB 0%, #A23B72 100%); 
+                <div style="background: linear-gradient(90deg, #1B4F72 0%, #2E86AB 100%); 
                            padding: 1rem; border-radius: 10px; text-align: center; color: white; margin-bottom: 0.5rem;">
                     <h3 style="margin: 0; font-size: 1.2rem;">🔧 Total Esquemas</h3>
                     <h2 style="margin: 0.2rem 0; font-size: 2rem; font-weight: bold;">{:,}</h2>
@@ -212,7 +224,7 @@ def show_production_analysis():
         with col2:
             with st.container():
                 st.markdown("""
-                <div style="background: linear-gradient(90deg, #F18F01 0%, #C73E1D 100%); 
+                <div style="background: linear-gradient(90deg, #2E86AB 0%, #5DADE2 100%); 
                            padding: 1rem; border-radius: 10px; text-align: center; color: white; margin-bottom: 0.5rem;">
                     <h3 style="margin: 0; font-size: 1.2rem;">📦 Placas Procesadas</h3>
                     <h2 style="margin: 0.2rem 0; font-size: 2rem; font-weight: bold;">{:,}</h2>
@@ -223,7 +235,7 @@ def show_production_analysis():
         with col3:
             with st.container():
                 st.markdown("""
-                <div style="background: linear-gradient(90deg, #85C1E9 0%, #2E86AB 100%); 
+                <div style="background: linear-gradient(90deg, #5DADE2 0%, #85C1E9 100%); 
                            padding: 1rem; border-radius: 10px; text-align: center; color: white; margin-bottom: 0.5rem;">
                     <h3 style="margin: 0; font-size: 1.2rem;">⚪ Placas Blancas 18mm</h3>
                     <h2 style="margin: 0.2rem 0; font-size: 2rem; font-weight: bold;">{:,}</h2>
@@ -235,7 +247,7 @@ def show_production_analysis():
             promedio_placas_dia = data['total_placas_procesadas'] / data['dias_activos']
             with st.container():
                 st.markdown("""
-                <div style="background: linear-gradient(90deg, #F7B801 0%, #F18F01 100%); 
+                <div style="background: linear-gradient(90deg, #3498DB 0%, #2980B9 100%); 
                            padding: 1rem; border-radius: 10px; text-align: center; color: white; margin-bottom: 0.5rem;">
                     <h3 style="margin: 0; font-size: 1.2rem;">📊 Promedio Placas/Día</h3>
                     <h2 style="margin: 0.2rem 0; font-size: 2rem; font-weight: bold;">{:.1f}</h2>
@@ -250,7 +262,7 @@ def show_production_analysis():
             promedio_min_esquema = data['duracion_promedio_seg'] / 60
             with st.container():
                 st.markdown("""
-                <div style="background: linear-gradient(90deg, #2C3E50 0%, #2E86AB 100%); 
+                <div style="background: linear-gradient(90deg, #2980B9 0%, #1B4F72 100%); 
                            padding: 1rem; border-radius: 10px; text-align: center; color: white; margin-bottom: 0.5rem;">
                     <h3 style="margin: 0; font-size: 1.2rem;">⏱️ Min/Esquema</h3>
                     <h2 style="margin: 0.2rem 0; font-size: 2rem; font-weight: bold;">{:.1f}</h2>
@@ -261,7 +273,7 @@ def show_production_analysis():
         with col2:
             with st.container():
                 st.markdown("""
-                <div style="background: linear-gradient(90deg, #A23B72 0%, #C73E1D 100%); 
+                <div style="background: linear-gradient(90deg, #1B4F72 0%, #154360 100%); 
                            padding: 1rem; border-radius: 10px; text-align: center; color: white; margin-bottom: 0.5rem;">
                     <h3 style="margin: 0; font-size: 1.2rem;">🕐 Tiempo Total</h3>
                     <h2 style="margin: 0.2rem 0; font-size: 2rem; font-weight: bold;">{}</h2>
@@ -272,7 +284,7 @@ def show_production_analysis():
         with col3:
             with st.container():
                 st.markdown("""
-                <div style="background: linear-gradient(90deg, #F18F01 0%, #F7B801 100%); 
+                <div style="background: linear-gradient(90deg, #5DADE2 0%, #3498DB 100%); 
                            padding: 1rem; border-radius: 10px; text-align: center; color: white; margin-bottom: 0.5rem;">
                     <h3 style="margin: 0; font-size: 1.2rem;">⚡ Tiempo Productivo</h3>
                     <h2 style="margin: 0.2rem 0; font-size: 2rem; font-weight: bold;">{}</h2>
@@ -283,7 +295,7 @@ def show_production_analysis():
         with col4:
             with st.container():
                 st.markdown("""
-                <div style="background: linear-gradient(90deg, #85C1E9 0%, #A23B72 100%); 
+                <div style="background: linear-gradient(90deg, #85C1E9 0%, #5DADE2 100%); 
                            padding: 1rem; border-radius: 10px; text-align: center; color: white; margin-bottom: 0.5rem;">
                     <h3 style="margin: 0; font-size: 1.2rem;">📈 Productividad</h3>
                     <h2 style="margin: 0.2rem 0; font-size: 2rem; font-weight: bold;">{:.1f}%</h2>
@@ -299,7 +311,7 @@ def show_production_analysis():
             tasa_improductiva = 100 - tiempo['tasa_tiempo_productivo']
             with st.container():
                 st.markdown("""
-                <div style="background: linear-gradient(90deg, #C73E1D 0%, #A23B72 100%); 
+                <div style="background: linear-gradient(90deg, #154360 0%, #1B4F72 100%); 
                            padding: 1rem; border-radius: 10px; text-align: center; color: white; margin-bottom: 0.5rem;">
                     <h3 style="margin: 0; font-size: 1.2rem;">📉 Tiempo Improductivo</h3>
                     <h2 style="margin: 0.2rem 0; font-size: 2rem; font-weight: bold;">{:.1f}%</h2>
@@ -311,7 +323,7 @@ def show_production_analysis():
             placas_por_hora_efectiva = data['total_placas_procesadas'] / (tiempo['tiempo_total_productivo_segundos'] / 3600) if tiempo['tiempo_total_productivo_segundos'] > 0 else 0
             with st.container():
                 st.markdown("""
-                <div style="background: linear-gradient(90deg, #2E86AB 0%, #85C1E9 100%); 
+                <div style="background: linear-gradient(90deg, #2980B9 0%, #5DADE2 100%); 
                            padding: 1rem; border-radius: 10px; text-align: center; color: white; margin-bottom: 0.5rem;">
                     <h3 style="margin: 0; font-size: 1.2rem;">🚀 Placas/Hora Efectiva</h3>
                     <h2 style="margin: 0.2rem 0; font-size: 2rem; font-weight: bold;">{:.1f}</h2>
@@ -322,7 +334,7 @@ def show_production_analysis():
         with col3:
             with st.container():
                 st.markdown("""
-                <div style="background: linear-gradient(90deg, #F7B801 0%, #F18F01 100%); 
+                <div style="background: linear-gradient(90deg, #3498DB 0%, #2E86AB 100%); 
                            padding: 1rem; border-radius: 10px; text-align: center; color: white; margin-bottom: 0.5rem;">
                     <h3 style="margin: 0; font-size: 1.2rem;">📅 Días Activos</h3>
                     <h2 style="margin: 0.2rem 0; font-size: 2rem; font-weight: bold;">{}</h2>
@@ -333,7 +345,7 @@ def show_production_analysis():
         with col4:
             with st.container():
                 st.markdown("""
-                <div style="background: linear-gradient(90deg, #A23B72 0%, #2C3E50 100%); 
+                <div style="background: linear-gradient(90deg, #1B4F72 0%, #154360 100%); 
                            padding: 1rem; border-radius: 10px; text-align: center; color: white; margin-bottom: 0.5rem;">
                     <h3 style="margin: 0; font-size: 1.2rem;">🔧 Jobs Únicos</h3>
                     <h2 style="margin: 0.2rem 0; font-size: 2rem; font-weight: bold;">{}</h2>
@@ -373,7 +385,7 @@ def show_production_analysis():
                 fig_pie.update_layout(
                     height=400, 
                     title_font_size=16, 
-                    title_x=0.5,
+                    title_x=0.0,
                     title_y=0.95,
                     font=dict(family="Arial, sans-serif", size=12)
                 )
@@ -394,7 +406,7 @@ def show_production_analysis():
                 fig_bar.update_layout(
                     height=400, 
                     title_font_size=16, 
-                    title_x=0.5, 
+                    title_x=0.0, 
                     title_y=0.95,
                     coloraxis_showscale=False,
                     font=dict(family="Arial, sans-serif", size=12)
@@ -447,7 +459,7 @@ def show_production_analysis():
                 fig_scatter1.update_layout(
                     height=400,
                     title_font_size=16,
-                    title_x=0.5,
+                    title_x=0.0,
                     title_y=0.95,
                     font=dict(family="Arial, sans-serif", size=12)
                 )
@@ -472,7 +484,7 @@ def show_production_analysis():
                 fig_scatter2.update_layout(
                     height=400,
                     title_font_size=16,
-                    title_x=0.5,
+                    title_x=0.0,
                     title_y=0.95,
                     font=dict(family="Arial, sans-serif", size=12)
                 )
@@ -487,8 +499,18 @@ def show_thickness_analysis():
         "Comparación detallada del rendimiento de la máquina según el tipo de material procesado. Cada espesor tiene características diferentes que afectan los tiempos de corte y la eficiencia."
     )
     
-    # Datos por espesor con métricas ampliadas
-    thickness_data = load_data("""
+    # Filtro de fechas en sidebar
+    with st.sidebar:
+        st.markdown("### 📅 Filtros de Fecha - Espesores")
+        fecha_inicio_esp = st.date_input("Fecha inicio", value=datetime(2025, 7, 1), key="thickness_start")
+        fecha_fin_esp = st.date_input("Fecha fin", value=datetime(2025, 8, 13), key="thickness_end")
+        
+        # Mostrar resumen del período
+        dias_periodo = (fecha_fin_esp - fecha_inicio_esp).days + 1
+        st.info(f"📊 Período: {dias_periodo} días")
+    
+    # Datos por espesor con métricas ampliadas y filtro de fecha
+    thickness_data = load_data(f"""
         SELECT 
             espesor_mm,
             COUNT(*) as total_cortes,
@@ -503,6 +525,7 @@ def show_thickness_analysis():
             AVG(largo_mm) as largo_promedio_mm,
             AVG(ancho_mm) as ancho_promedio_mm
         FROM cortes_seccionadora 
+        WHERE fecha_proceso BETWEEN '{fecha_inicio_esp}' AND '{fecha_fin_esp}'
         GROUP BY espesor_mm 
         ORDER BY espesor_mm
     """)
@@ -600,7 +623,7 @@ def show_thickness_analysis():
             mejor_aprovechamiento_mm = thickness_data.loc[mejor_aprovechamiento_idx, 'espesor_mm']
             aprovechamiento_val = thickness_data.loc[mejor_aprovechamiento_idx, 'placas_por_corte']
             st.markdown("""
-            <div style="background: linear-gradient(90deg, #F18F01 0%, #F7B801 100%); 
+            <div style="background: linear-gradient(90deg, #85C1E9 0%, #5DADE2 100%); 
                        padding: 1rem; border-radius: 10px; text-align: center; color: white; margin-bottom: 0.5rem;">
                 <h3 style="margin: 0; font-size: 1.2rem;">📈 Mejor Aprovechamiento</h3>
                 <h2 style="margin: 0.2rem 0; font-size: 2rem; font-weight: bold;">{} mm</h2>
@@ -633,7 +656,7 @@ def show_thickness_analysis():
                                color_continuous_scale=[[0, COLORS['info']], [1, COLORS['primary']]])
             fig_volume.update_layout(
                 coloraxis_showscale=False,
-                title_x=0.5,
+                title_x=0.0,
                 title_y=0.95,
                 title_font_size=16,
                 font=dict(family="Arial, sans-serif", size=12)
@@ -648,7 +671,7 @@ def show_thickness_analysis():
                                    color_continuous_scale=[[0, COLORS['success']], [1, COLORS['warning']]])
             fig_efficiency.update_layout(
                 coloraxis_showscale=False,
-                title_x=0.5,
+                title_x=0.0,
                 title_y=0.95,
                 title_font_size=16,
                 font=dict(family="Arial, sans-serif", size=12)
@@ -669,7 +692,7 @@ def show_thickness_analysis():
                                    color_continuous_scale=[[0, COLORS['warning']], [1, COLORS['success']]])
             fig_placas_min.update_layout(
                 coloraxis_showscale=False,
-                title_x=0.5,
+                title_x=0.0,
                 title_y=0.95,
                 title_font_size=16,
                 font=dict(family="Arial, sans-serif", size=12)
@@ -685,7 +708,7 @@ def show_thickness_analysis():
                                         color_continuous_scale=[[0, COLORS['info']], [1, COLORS['accent']]])
             fig_aprovechamiento.update_layout(
                 coloraxis_showscale=False,
-                title_x=0.5,
+                title_x=0.0,
                 title_y=0.95,
                 title_font_size=16,
                 font=dict(family="Arial, sans-serif", size=12)
@@ -724,11 +747,21 @@ def show_jobs_analysis():
         "Análisis detallado de cada tipo de trabajo procesado en la máquina. Cada 'job' representa un diseño o tipo de corte específico que puede repetirse en múltiples esquemas."
     )
     
+    # Filtro de fechas en sidebar
+    with st.sidebar:
+        st.markdown("### 📅 Filtros de Fecha - Jobs")
+        fecha_inicio_jobs = st.date_input("Fecha inicio", value=datetime(2025, 7, 1), key="jobs_start")
+        fecha_fin_jobs = st.date_input("Fecha fin", value=datetime(2025, 8, 13), key="jobs_end")
+        
+        # Mostrar resumen del período
+        dias_periodo_jobs = (fecha_fin_jobs - fecha_inicio_jobs).days + 1
+        st.info(f"📊 Período: {dias_periodo_jobs} días")
+    
     # ==================== SECCIÓN 1: KPIs GLOBALES DE JOBS ====================
     st.subheader("📊 KPIs Globales de Trabajos")
     
-    # Consulta para métricas globales de jobs
-    global_jobs_data = load_data("""
+    # Consulta para métricas globales de jobs con filtro de fecha
+    global_jobs_data = load_data(f"""
         WITH job_metrics AS (
             SELECT 
                 job_key,
@@ -741,6 +774,7 @@ def show_jobs_analysis():
                 AVG(largo_mm * ancho_mm) as area_promedio_mm2,
                 AVG(espesor_mm) as espesor_promedio
             FROM cortes_seccionadora 
+            WHERE fecha_proceso BETWEEN '{fecha_inicio_jobs}' AND '{fecha_fin_jobs}'
             GROUP BY job_key
         )
         SELECT 
@@ -830,7 +864,7 @@ def show_jobs_analysis():
         
         with col3:
             st.markdown("""
-            <div style="background: linear-gradient(90deg, #F18F01 0%, #F7B801 100%); 
+            <div style="background: linear-gradient(90deg, #2E86AB 0%, #3498DB 100%); 
                        padding: 1rem; border-radius: 10px; text-align: center; color: white; margin-bottom: 0.5rem;">
                 <h3 style="margin: 0; font-size: 1.2rem;">🔥 Jobs Frecuentes</h3>
                 <h2 style="margin: 0.2rem 0; font-size: 2rem; font-weight: bold;">{}</h2>
@@ -899,6 +933,7 @@ def show_jobs_analysis():
             SUM(cantidad_placas) / (SUM(duracion_segundos) / 60.0) as eficiencia_placas_min,
             AVG(largo_mm * ancho_mm * espesor_mm) as volumen_promedio_mm3
         FROM cortes_seccionadora 
+        WHERE fecha_proceso BETWEEN '{fecha_inicio_jobs}' AND '{fecha_fin_jobs}'
         GROUP BY job_key 
         {filtro_adicional}
         ORDER BY {sort_mapping[sort_by]} DESC 
@@ -929,7 +964,7 @@ def show_jobs_analysis():
             fig_top_jobs.update_layout(
                 height=600, 
                 coloraxis_showscale=False,
-                title_x=0.5,
+                title_x=0.0,
                 title_y=0.95,
                 title_font_size=16,
                 font=dict(family="Arial, sans-serif", size=12)
@@ -948,7 +983,7 @@ def show_jobs_analysis():
             fig_duration.update_layout(
                 height=600, 
                 coloraxis_showscale=False,
-                title_x=0.5,
+                title_x=0.0,
                 title_y=0.95,
                 title_font_size=16,
                 font=dict(family="Arial, sans-serif", size=12)
@@ -978,7 +1013,7 @@ def show_jobs_analysis():
             )
             fig_scatter_efficiency.update_layout(
                 height=400,
-                title_x=0.5,
+                title_x=0.0,
                 title_y=0.95,
                 title_font_size=16,
                 font=dict(family="Arial, sans-serif", size=12)
@@ -1001,7 +1036,7 @@ def show_jobs_analysis():
             fig_efficiency.update_layout(
                 height=400,
                 coloraxis_showscale=False,
-                title_x=0.5,
+                title_x=0.0,
                 title_y=0.95,
                 title_font_size=16,
                 font=dict(family="Arial, sans-serif", size=12)
