@@ -379,7 +379,7 @@ def show_production_analysis():
                     values='total_placas', 
                     names='espesor_mm',
                     title='📊 Distribución de Placas por Espesor',
-                    color_discrete_sequence=[COLORS['primary'], COLORS['secondary'], COLORS['accent'], COLORS['success'], COLORS['info'], COLORS['warning']]
+                    color_discrete_sequence=[COLORS['primary'], COLORS['secondary'], COLORS['accent'], COLORS['success'], COLORS['info'], COLORS['dark']]
                 )
                 fig_pie.update_traces(textposition='inside', textinfo='percent+label')
                 fig_pie.update_layout(
@@ -538,7 +538,7 @@ def show_thickness_analysis():
         col1, col2, col3, col4 = st.columns(4)
         with col1:
             st.markdown("""
-            <div style="background: linear-gradient(90deg, #2E86AB 0%, #A23B72 100%); 
+            <div style="background: linear-gradient(90deg, #1B4F72 0%, #2E86AB 100%); 
                        padding: 1rem; border-radius: 10px; text-align: center; color: white; margin-bottom: 0.5rem;">
                 <h3 style="margin: 0; font-size: 1.2rem;">📏 Tipos de Material</h3>
                 <h2 style="margin: 0.2rem 0; font-size: 2rem; font-weight: bold;">{}</h2>
@@ -550,7 +550,7 @@ def show_thickness_analysis():
             most_used = thickness_data.loc[thickness_data['total_placas'].idxmax(), 'espesor_mm']
             most_used_placas = thickness_data.loc[thickness_data['total_placas'].idxmax(), 'total_placas']
             st.markdown("""
-            <div style="background: linear-gradient(90deg, #F18F01 0%, #C73E1D 100%); 
+            <div style="background: linear-gradient(90deg, #2E86AB 0%, #5DADE2 100%); 
                        padding: 1rem; border-radius: 10px; text-align: center; color: white; margin-bottom: 0.5rem;">
                 <h3 style="margin: 0; font-size: 1.2rem;">🏆 Material Principal</h3>
                 <h2 style="margin: 0.2rem 0; font-size: 2rem; font-weight: bold;">{} mm</h2>
@@ -573,7 +573,7 @@ def show_thickness_analysis():
         with col4:
             total_tiempo_horas = thickness_data['tiempo_total_seg'].sum() / 3600
             st.markdown("""
-            <div style="background: linear-gradient(90deg, #F7B801 0%, #F18F01 100%); 
+            <div style="background: linear-gradient(90deg, #3498DB 0%, #2980B9 100%); 
                        padding: 1rem; border-radius: 10px; text-align: center; color: white; margin-bottom: 0.5rem;">
                 <h3 style="margin: 0; font-size: 1.2rem;">⏱️ Tiempo Total</h3>
                 <h2 style="margin: 0.2rem 0; font-size: 2rem; font-weight: bold;">{:.1f}h</h2>
@@ -610,7 +610,7 @@ def show_thickness_analysis():
             variabilidad_val = ((thickness_data.loc[max_variabilidad_idx, 'duracion_max_seg'] - thickness_data.loc[max_variabilidad_idx, 'duracion_min_seg']) 
                                / thickness_data.loc[max_variabilidad_idx, 'duracion_promedio_seg']) * 100
             st.markdown("""
-            <div style="background: linear-gradient(90deg, #A23B72 0%, #C73E1D 100%); 
+            <div style="background: linear-gradient(90deg, #1B4F72 0%, #154360 100%); 
                        padding: 1rem; border-radius: 10px; text-align: center; color: white; margin-bottom: 0.5rem;">
                 <h3 style="margin: 0; font-size: 1.2rem;">📊 Más Variable</h3>
                 <h2 style="margin: 0.2rem 0; font-size: 2rem; font-weight: bold;">{} mm</h2>
@@ -634,7 +634,7 @@ def show_thickness_analysis():
         with col4:
             total_trabajos_unicos = thickness_data['trabajos_unicos'].sum()
             st.markdown("""
-            <div style="background: linear-gradient(90deg, #85C1E9 0%, #A23B72 100%); 
+            <div style="background: linear-gradient(90deg, #85C1E9 0%, #5DADE2 100%); 
                        padding: 1rem; border-radius: 10px; text-align: center; color: white; margin-bottom: 0.5rem;">
                 <h3 style="margin: 0; font-size: 1.2rem;">🔧 Diversidad de Trabajos</h3>
                 <h2 style="margin: 0.2rem 0; font-size: 2rem; font-weight: bold;">{}</h2>
@@ -705,7 +705,7 @@ def show_thickness_analysis():
                                         title='📈 Aprovechamiento: Placas por Corte',
                                         labels={'espesor_mm': 'Espesor (mm)', 'placas_por_corte': 'Placas/Corte'},
                                         color='placas_por_corte',
-                                        color_continuous_scale=[[0, COLORS['accent']], [1, COLORS['success']]])
+                                        color_continuous_scale=[[0, COLORS['info']], [1, COLORS['primary']]])
             fig_aprovechamiento.update_layout(
                 coloraxis_showscale=False,
                 title_x=0.0,
@@ -798,7 +798,7 @@ def show_jobs_analysis():
         
         with col1:
             st.markdown("""
-            <div style="background: linear-gradient(90deg, #2E86AB 0%, #A23B72 100%); 
+            <div style="background: linear-gradient(90deg, #1B4F72 0%, #2E86AB 100%); 
                        padding: 1rem; border-radius: 10px; text-align: center; color: white; margin-bottom: 0.5rem;">
                 <h3 style="margin: 0; font-size: 1.2rem;">🔧 Total Trabajos Únicos</h3>
                 <h2 style="margin: 0.2rem 0; font-size: 2rem; font-weight: bold;">{:,}</h2>
@@ -809,7 +809,7 @@ def show_jobs_analysis():
         with col2:
             tiempo_total_horas = metrics['tiempo_total_segundos'] / 3600
             st.markdown("""
-            <div style="background: linear-gradient(90deg, #F18F01 0%, #C73E1D 100%); 
+            <div style="background: linear-gradient(90deg, #2E86AB 0%, #5DADE2 100%); 
                        padding: 1rem; border-radius: 10px; text-align: center; color: white; margin-bottom: 0.5rem;">
                 <h3 style="margin: 0; font-size: 1.2rem;">⏱️ Tiempo Total Trabajos</h3>
                 <h2 style="margin: 0.2rem 0; font-size: 2rem; font-weight: bold;">{:.0f}h</h2>
@@ -830,7 +830,7 @@ def show_jobs_analysis():
         with col4:
             duracion_global_min = metrics['duracion_global_promedio'] / 60
             st.markdown("""
-            <div style="background: linear-gradient(90deg, #F7B801 0%, #F18F01 100%); 
+            <div style="background: linear-gradient(90deg, #3498DB 0%, #2980B9 100%); 
                        padding: 1rem; border-radius: 10px; text-align: center; color: white; margin-bottom: 0.5rem;">
                 <h3 style="margin: 0; font-size: 1.2rem;">⚡ Duración Promedio</h3>
                 <h2 style="margin: 0.2rem 0; font-size: 2rem; font-weight: bold;">{:.1f}</h2>
@@ -854,7 +854,7 @@ def show_jobs_analysis():
         with col2:
             porcentaje_unicos = (metrics['trabajos_ejecutados_una_vez'] / metrics['total_trabajos_unicos']) * 100
             st.markdown("""
-            <div style="background: linear-gradient(90deg, #A23B72 0%, #C73E1D 100%); 
+            <div style="background: linear-gradient(90deg, #1B4F72 0%, #154360 100%); 
                        padding: 1rem; border-radius: 10px; text-align: center; color: white; margin-bottom: 0.5rem;">
                 <h3 style="margin: 0; font-size: 1.2rem;">🔄 Trabajos Únicos</h3>
                 <h2 style="margin: 0.2rem 0; font-size: 2rem; font-weight: bold;">{:.0f}%</h2>
@@ -875,7 +875,7 @@ def show_jobs_analysis():
         with col4:
             eficiencia_global = metrics['placas_totales'] / (tiempo_total_horas * 60) if tiempo_total_horas > 0 else 0
             st.markdown("""
-            <div style="background: linear-gradient(90deg, #85C1E9 0%, #A23B72 100%); 
+            <div style="background: linear-gradient(90deg, #85C1E9 0%, #5DADE2 100%); 
                        padding: 1rem; border-radius: 10px; text-align: center; color: white; margin-bottom: 0.5rem;">
                 <h3 style="margin: 0; font-size: 1.2rem;">🚀 Eficiencia Global</h3>
                 <h2 style="margin: 0.2rem 0; font-size: 2rem; font-weight: bold;">{:.1f}</h2>
