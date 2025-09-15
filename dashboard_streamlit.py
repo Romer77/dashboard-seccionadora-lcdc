@@ -228,7 +228,7 @@ def show_production_analysis():
                            padding: 1rem; border-radius: 10px; text-align: center; color: white; margin-bottom: 0.5rem;">
                     <h3 style="margin: 0; font-size: 1.2rem;">📦 Placas Procesadas</h3>
                     <h2 style="margin: 0.2rem 0; font-size: 2rem; font-weight: bold;">{:,}</h2>
-                    <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">Total MDF procesado</p>
+                    <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">Unidades procesadas</p>
                 </div>
                 """.format(int(data['total_placas_procesadas'])), unsafe_allow_html=True)
         
@@ -243,20 +243,9 @@ def show_production_analysis():
                 </div>
                 """.format(int(data['placas_blancas_18mm'])), unsafe_allow_html=True)
         
-        with col4:
-            promedio_placas_dia = data['total_placas_procesadas'] / data['dias_activos']
-            with st.container():
-                st.markdown("""
-                <div style="background: linear-gradient(90deg, #3498DB 0%, #2980B9 100%); 
-                           padding: 1rem; border-radius: 10px; text-align: center; color: white; margin-bottom: 0.5rem;">
-                    <h3 style="margin: 0; font-size: 1.2rem;">📊 Promedio Placas/Día</h3>
-                    <h2 style="margin: 0.2rem 0; font-size: 2rem; font-weight: bold;">{:.1f}</h2>
-                    <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">Capacidad diaria</p>
-                </div>
-                """.format(promedio_placas_dia), unsafe_allow_html=True)
         
         # Segunda fila de KPIs
-        col1, col2, col3, col4 = st.columns(4)
+        col1, col2, col3 = st.columns(3)
         
         with col1:
             promedio_min_esquema = data['duracion_promedio_seg'] / 60
@@ -275,24 +264,13 @@ def show_production_analysis():
                 st.markdown("""
                 <div style="background: linear-gradient(90deg, #1B4F72 0%, #154360 100%); 
                            padding: 1rem; border-radius: 10px; text-align: center; color: white; margin-bottom: 0.5rem;">
-                    <h3 style="margin: 0; font-size: 1.2rem;">🕐 Tiempo Total</h3>
-                    <h2 style="margin: 0.2rem 0; font-size: 2rem; font-weight: bold;">{}</h2>
-                    <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">Span completo</p>
-                </div>
-                """.format(format_time_duration(tiempo['tiempo_total_maquina_segundos'])), unsafe_allow_html=True)
-        
-        with col3:
-            with st.container():
-                st.markdown("""
-                <div style="background: linear-gradient(90deg, #5DADE2 0%, #3498DB 100%); 
-                           padding: 1rem; border-radius: 10px; text-align: center; color: white; margin-bottom: 0.5rem;">
-                    <h3 style="margin: 0; font-size: 1.2rem;">⚡ Tiempo Productivo</h3>
+                    <h3 style="margin: 0; font-size: 1.2rem;">🕐 Tiempo total de trabajo</h3>
                     <h2 style="margin: 0.2rem 0; font-size: 2rem; font-weight: bold;">{}</h2>
                     <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">Solo trabajando</p>
                 </div>
                 """.format(format_time_duration(tiempo['tiempo_total_productivo_segundos'])), unsafe_allow_html=True)
         
-        with col4:
+        with col3:
             with st.container():
                 st.markdown("""
                 <div style="background: linear-gradient(90deg, #85C1E9 0%, #5DADE2 100%); 
@@ -302,10 +280,14 @@ def show_production_analysis():
                     <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">Eficiencia</p>
                 </div>
                 """.format(tiempo['tasa_tiempo_productivo']), unsafe_allow_html=True)
+            create_kpi_explanation(
+                "Productividad",
+                "La productividad se calcula como: (Tiempo Productivo / Tiempo Total de Máquina) * 100. Tiempo Productivo es la suma de todas las duraciones de esquemas ejecutados. Tiempo Total de Máquina es desde el primer inicio hasta el último fin de cada día."
+            )
         
         # Tercera fila de KPIs avanzados
         st.markdown("### 📊 Métricas Avanzadas")
-        col1, col2, col3, col4 = st.columns(4)
+        col1, col2, col3 = st.columns(3)
         
         with col1:
             tasa_improductiva = 100 - tiempo['tasa_tiempo_productivo']
@@ -341,17 +323,6 @@ def show_production_analysis():
                     <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">Con producción</p>
                 </div>
                 """.format(int(data['dias_activos'])), unsafe_allow_html=True)
-        
-        with col4:
-            with st.container():
-                st.markdown("""
-                <div style="background: linear-gradient(90deg, #1B4F72 0%, #154360 100%); 
-                           padding: 1rem; border-radius: 10px; text-align: center; color: white; margin-bottom: 0.5rem;">
-                    <h3 style="margin: 0; font-size: 1.2rem;">🔧 Trabajos Únicos</h3>
-                    <h2 style="margin: 0.2rem 0; font-size: 2rem; font-weight: bold;">{}</h2>
-                    <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">Tipos diferentes</p>
-                </div>
-                """.format(int(data['trabajos_unicos'])), unsafe_allow_html=True)
             
         # ==================== SECCIÓN 2: ANÁLISIS POR MATERIAL ====================
         st.markdown("---")
@@ -416,6 +387,10 @@ def show_production_analysis():
         # ==================== SECCIÓN 3: ANÁLISIS DE RELACIONES ====================
         st.markdown("---")
         st.subheader("🔍 Análisis de Relaciones Entre Indicadores")
+        create_kpi_explanation(
+            "Gráficos de Dispersión",
+            "Estos gráficos muestran relaciones entre variables del proceso productivo. El primer gráfico relaciona las horas productivas diarias con la eficiencia (placas/hora), donde el tamaño de cada punto representa el total de placas procesadas. El segundo gráfico relaciona el número de esquemas ejecutados con las placas totales procesadas, donde el tamaño indica las horas productivas."
+        )
         
         # Datos diarios para análisis
         daily_data = load_data(f"""
@@ -535,7 +510,7 @@ def show_thickness_analysis():
         st.subheader("📊 KPIs por Tipo de Material")
         
         # Primera fila de KPIs
-        col1, col2, col3, col4 = st.columns(4)
+        col1, col2 = st.columns(2)
         with col1:
             st.markdown("""
             <div style="background: linear-gradient(90deg, #1B4F72 0%, #2E86AB 100%); 
@@ -558,90 +533,6 @@ def show_thickness_analysis():
             </div>
             """.format(int(most_used), int(most_used_placas)), unsafe_allow_html=True)
         
-        with col3:
-            fastest = thickness_data.loc[thickness_data['duracion_promedio_seg'].idxmin(), 'espesor_mm']
-            fastest_time = thickness_data.loc[thickness_data['duracion_promedio_seg'].idxmin(), 'duracion_promedio_seg'] / 60
-            st.markdown("""
-            <div style="background: linear-gradient(90deg, #85C1E9 0%, #2E86AB 100%); 
-                       padding: 1rem; border-radius: 10px; text-align: center; color: white; margin-bottom: 0.5rem;">
-                <h3 style="margin: 0; font-size: 1.2rem;">⚡ Más Rápido</h3>
-                <h2 style="margin: 0.2rem 0; font-size: 2rem; font-weight: bold;">{} mm</h2>
-                <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">{:.1f} min promedio</p>
-            </div>
-            """.format(int(fastest), fastest_time), unsafe_allow_html=True)
-        
-        with col4:
-            total_tiempo_horas = thickness_data['tiempo_total_seg'].sum() / 3600
-            st.markdown("""
-            <div style="background: linear-gradient(90deg, #3498DB 0%, #2980B9 100%); 
-                       padding: 1rem; border-radius: 10px; text-align: center; color: white; margin-bottom: 0.5rem;">
-                <h3 style="margin: 0; font-size: 1.2rem;">⏱️ Tiempo Total</h3>
-                <h2 style="margin: 0.2rem 0; font-size: 2rem; font-weight: bold;">{:.1f}h</h2>
-                <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">Todos los materiales</p>
-            </div>
-            """.format(total_tiempo_horas), unsafe_allow_html=True)
-        
-        # Segunda fila de KPIs avanzados
-        col1, col2, col3, col4 = st.columns(4)
-        
-        # Calcular métricas adicionales
-        thickness_data['placas_por_corte'] = thickness_data['total_placas'] / thickness_data['total_cortes']
-        thickness_data['eficiencia_placas_min'] = thickness_data['total_placas'] / (thickness_data['tiempo_total_seg'] / 60)
-        
-        with col1:
-            mejor_eficiencia_idx = thickness_data['eficiencia_placas_min'].idxmax()
-            mejor_eficiencia_mm = thickness_data.loc[mejor_eficiencia_idx, 'espesor_mm']
-            mejor_eficiencia_val = thickness_data.loc[mejor_eficiencia_idx, 'eficiencia_placas_min']
-            st.markdown("""
-            <div style="background: linear-gradient(90deg, #2C3E50 0%, #2E86AB 100%); 
-                       padding: 1rem; border-radius: 10px; text-align: center; color: white; margin-bottom: 0.5rem;">
-                <h3 style="margin: 0; font-size: 1.2rem;">🚀 Más Eficiente</h3>
-                <h2 style="margin: 0.2rem 0; font-size: 2rem; font-weight: bold;">{} mm</h2>
-                <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">{:.1f} placas/min</p>
-            </div>
-            """.format(int(mejor_eficiencia_mm), mejor_eficiencia_val), unsafe_allow_html=True)
-        
-        with col2:
-            max_variabilidad_idx = thickness_data.apply(
-                lambda row: (row['duracion_max_seg'] - row['duracion_min_seg']) / row['duracion_promedio_seg'] if row['duracion_promedio_seg'] > 0 else 0, 
-                axis=1
-            ).idxmax()
-            max_variabilidad_mm = thickness_data.loc[max_variabilidad_idx, 'espesor_mm']
-            variabilidad_val = ((thickness_data.loc[max_variabilidad_idx, 'duracion_max_seg'] - thickness_data.loc[max_variabilidad_idx, 'duracion_min_seg']) 
-                               / thickness_data.loc[max_variabilidad_idx, 'duracion_promedio_seg']) * 100
-            st.markdown("""
-            <div style="background: linear-gradient(90deg, #1B4F72 0%, #154360 100%); 
-                       padding: 1rem; border-radius: 10px; text-align: center; color: white; margin-bottom: 0.5rem;">
-                <h3 style="margin: 0; font-size: 1.2rem;">📊 Más Variable</h3>
-                <h2 style="margin: 0.2rem 0; font-size: 2rem; font-weight: bold;">{} mm</h2>
-                <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">{:.0f}% variación</p>
-            </div>
-            """.format(int(max_variabilidad_mm), variabilidad_val), unsafe_allow_html=True)
-        
-        with col3:
-            mejor_aprovechamiento_idx = thickness_data['placas_por_corte'].idxmax()
-            mejor_aprovechamiento_mm = thickness_data.loc[mejor_aprovechamiento_idx, 'espesor_mm']
-            aprovechamiento_val = thickness_data.loc[mejor_aprovechamiento_idx, 'placas_por_corte']
-            st.markdown("""
-            <div style="background: linear-gradient(90deg, #85C1E9 0%, #5DADE2 100%); 
-                       padding: 1rem; border-radius: 10px; text-align: center; color: white; margin-bottom: 0.5rem;">
-                <h3 style="margin: 0; font-size: 1.2rem;">📈 Mejor Aprovechamiento</h3>
-                <h2 style="margin: 0.2rem 0; font-size: 2rem; font-weight: bold;">{} mm</h2>
-                <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">{:.1f} placas/corte</p>
-            </div>
-            """.format(int(mejor_aprovechamiento_mm), aprovechamiento_val), unsafe_allow_html=True)
-        
-        with col4:
-            total_trabajos_unicos = thickness_data['trabajos_unicos'].sum()
-            st.markdown("""
-            <div style="background: linear-gradient(90deg, #85C1E9 0%, #5DADE2 100%); 
-                       padding: 1rem; border-radius: 10px; text-align: center; color: white; margin-bottom: 0.5rem;">
-                <h3 style="margin: 0; font-size: 1.2rem;">🔧 Diversidad de Trabajos</h3>
-                <h2 style="margin: 0.2rem 0; font-size: 2rem; font-weight: bold;">{}</h2>
-                <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">Diseños únicos</p>
-            </div>
-            """.format(int(total_trabajos_unicos)), unsafe_allow_html=True)
-        
         # ==================== SECCIÓN 2: ANÁLISIS COMPARATIVO ====================
         st.markdown("---")
         st.subheader("📊 Análisis Comparativo por Material")
@@ -659,7 +550,8 @@ def show_thickness_analysis():
                 title_x=0.0,
                 title_y=0.95,
                 title_font_size=16,
-                font=dict(family="Arial, sans-serif", size=12)
+                font=dict(family="Arial, sans-serif", size=12),
+                xaxis=dict(tickmode='array', tickvals=thickness_data['espesor_mm'].tolist(), ticktext=[f'{int(x)} mm' for x in thickness_data['espesor_mm']])
             )
             st.plotly_chart(fig_volume, use_container_width=True)
         
@@ -674,7 +566,8 @@ def show_thickness_analysis():
                 title_x=0.0,
                 title_y=0.95,
                 title_font_size=16,
-                font=dict(family="Arial, sans-serif", size=12)
+                font=dict(family="Arial, sans-serif", size=12),
+                xaxis=dict(tickmode='array', tickvals=thickness_data['espesor_mm'].tolist(), ticktext=[f'{int(x)} mm' for x in thickness_data['espesor_mm']])
             )
             st.plotly_chart(fig_efficiency, use_container_width=True)
         
@@ -695,23 +588,28 @@ def show_thickness_analysis():
                 title_x=0.0,
                 title_y=0.95,
                 title_font_size=16,
-                font=dict(family="Arial, sans-serif", size=12)
+                font=dict(family="Arial, sans-serif", size=12),
+                xaxis=dict(tickmode='array', tickvals=thickness_data['espesor_mm'].tolist(), ticktext=[f'{int(x)} mm' for x in thickness_data['espesor_mm']])
             )
             st.plotly_chart(fig_placas_min, use_container_width=True)
         
         with col2:
             # Gráfico de aprovechamiento (placas por corte)
-            fig_aprovechamiento = px.bar(thickness_data, x='espesor_mm', y='placas_por_corte',
-                                        title='📈 Aprovechamiento: Placas por Corte',
-                                        labels={'espesor_mm': 'Espesor (mm)', 'placas_por_corte': 'Placas/Corte'},
-                                        color='placas_por_corte',
+            # Calcular métricas para gráficos
+            thickness_data['placas_por_esquema'] = thickness_data['total_placas'] / thickness_data['total_cortes']
+            
+            fig_aprovechamiento = px.bar(thickness_data, x='espesor_mm', y='placas_por_esquema',
+                                        title='📈 Aprovechamiento: Placas por Esquema',
+                                        labels={'espesor_mm': 'Espesor (mm)', 'placas_por_esquema': 'Placas/Esquema'},
+                                        color='placas_por_esquema',
                                         color_continuous_scale=[[0, COLORS['info']], [1, COLORS['primary']]])
             fig_aprovechamiento.update_layout(
                 coloraxis_showscale=False,
                 title_x=0.0,
                 title_y=0.95,
                 title_font_size=16,
-                font=dict(family="Arial, sans-serif", size=12)
+                font=dict(family="Arial, sans-serif", size=12),
+                xaxis=dict(tickmode='array', tickvals=thickness_data['espesor_mm'].tolist(), ticktext=[f'{int(x)} mm' for x in thickness_data['espesor_mm']])
             )
             st.plotly_chart(fig_aprovechamiento, use_container_width=True)
         
@@ -722,17 +620,17 @@ def show_thickness_analysis():
         display_data = thickness_data.copy()
         display_data['Espesor (mm)'] = display_data['espesor_mm'].astype(int)
         display_data['Total Placas'] = display_data['total_placas'].astype(int)
-        display_data['Total Cortes'] = display_data['total_cortes'].astype(int)
+        display_data['Total Esquemas'] = display_data['total_cortes'].astype(int)
         display_data['Trabajos Únicos'] = display_data['trabajos_unicos'].astype(int)
         display_data['Tiempo Total (h)'] = (display_data['tiempo_total_seg'] / 3600).round(1)
         display_data['Duración Promedio (min)'] = (display_data['duracion_promedio_seg'] / 60).round(1)
         display_data['Placas/min'] = display_data['eficiencia_placas_min'].round(2)
-        display_data['Placas/Corte'] = display_data['placas_por_corte'].round(1)
+        display_data['Placas/Esquema'] = (display_data['total_placas'] / display_data['total_cortes']).round(1)
         
         # Mostrar tabla
         st.dataframe(
-            display_data[['Espesor (mm)', 'Total Placas', 'Total Cortes', 'Trabajos Únicos', 
-                         'Tiempo Total (h)', 'Duración Promedio (min)', 'Placas/min', 'Placas/Corte']],
+            display_data[['Espesor (mm)', 'Total Placas', 'Total Esquemas', 'Trabajos Únicos', 
+                         'Tiempo Total (h)', 'Duración Promedio (min)', 'Placas/min', 'Placas/Esquema']],
             use_container_width=True,
             hide_index=True
         )
@@ -758,7 +656,7 @@ def show_jobs_analysis():
         st.info(f"📊 Período: {dias_periodo_trabajos} días")
     
     # ==================== SECCIÓN 1: KPIs GLOBALES DE TRABAJOS ====================
-    st.subheader("📊 KPIs Globales de Trabajos")
+    st.subheader("📊 KPIs de Trabajos")
     
     # Consulta para métricas globales de trabajos con filtro de fecha
     global_trabajos_data = load_data(f"""
@@ -793,8 +691,8 @@ def show_jobs_analysis():
     if not global_trabajos_data.empty:
         metrics = global_trabajos_data.iloc[0]
         
-        # Primera fila de KPIs globales
-        col1, col2, col3, col4 = st.columns(4)
+        # KPI simplificado
+        col1, col2 = st.columns(2)
         
         with col1:
             st.markdown("""
@@ -807,73 +705,7 @@ def show_jobs_analysis():
             """.format(int(metrics['total_trabajos_unicos'])), unsafe_allow_html=True)
         
         with col2:
-            tiempo_total_horas = metrics['tiempo_total_segundos'] / 3600
-            st.markdown("""
-            <div style="background: linear-gradient(90deg, #2E86AB 0%, #5DADE2 100%); 
-                       padding: 1rem; border-radius: 10px; text-align: center; color: white; margin-bottom: 0.5rem;">
-                <h3 style="margin: 0; font-size: 1.2rem;">⏱️ Tiempo Total Trabajos</h3>
-                <h2 style="margin: 0.2rem 0; font-size: 2rem; font-weight: bold;">{:.0f}h</h2>
-                <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">Todos los trabajos</p>
-            </div>
-            """.format(tiempo_total_horas), unsafe_allow_html=True)
-        
-        with col3:
-            st.markdown("""
-            <div style="background: linear-gradient(90deg, #85C1E9 0%, #2E86AB 100%); 
-                       padding: 1rem; border-radius: 10px; text-align: center; color: white; margin-bottom: 0.5rem;">
-                <h3 style="margin: 0; font-size: 1.2rem;">📦 Promedio Placas/Trabajo</h3>
-                <h2 style="margin: 0.2rem 0; font-size: 2rem; font-weight: bold;">{:.1f}</h2>
-                <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">Placas por trabajo</p>
-            </div>
-            """.format(metrics['promedio_placas_por_trabajo']), unsafe_allow_html=True)
-        
-        with col4:
-            duracion_global_min = metrics['duracion_global_promedio'] / 60
-            st.markdown("""
-            <div style="background: linear-gradient(90deg, #3498DB 0%, #2980B9 100%); 
-                       padding: 1rem; border-radius: 10px; text-align: center; color: white; margin-bottom: 0.5rem;">
-                <h3 style="margin: 0; font-size: 1.2rem;">⚡ Duración Promedio</h3>
-                <h2 style="margin: 0.2rem 0; font-size: 2rem; font-weight: bold;">{:.1f}</h2>
-                <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">minutos/esquema</p>
-            </div>
-            """.format(duracion_global_min), unsafe_allow_html=True)
-        
-        # Segunda fila de KPIs de comportamiento
-        col1, col2, col3, col4 = st.columns(4)
-        
-        with col1:
-            st.markdown("""
-            <div style="background: linear-gradient(90deg, #2C3E50 0%, #2E86AB 100%); 
-                       padding: 1rem; border-radius: 10px; text-align: center; color: white; margin-bottom: 0.5rem;">
-                <h3 style="margin: 0; font-size: 1.2rem;">🎯 Trabajo Más Grande</h3>
-                <h2 style="margin: 0.2rem 0; font-size: 2rem; font-weight: bold;">{:,}</h2>
-                <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">placas máximo</p>
-            </div>
-            """.format(int(metrics['max_placas_trabajo'])), unsafe_allow_html=True)
-        
-        with col2:
-            porcentaje_unicos = (metrics['trabajos_ejecutados_una_vez'] / metrics['total_trabajos_unicos']) * 100
-            st.markdown("""
-            <div style="background: linear-gradient(90deg, #1B4F72 0%, #154360 100%); 
-                       padding: 1rem; border-radius: 10px; text-align: center; color: white; margin-bottom: 0.5rem;">
-                <h3 style="margin: 0; font-size: 1.2rem;">🔄 Trabajos Únicos</h3>
-                <h2 style="margin: 0.2rem 0; font-size: 2rem; font-weight: bold;">{:.0f}%</h2>
-                <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">Ejecutados 1 vez</p>
-            </div>
-            """.format(porcentaje_unicos), unsafe_allow_html=True)
-        
-        with col3:
-            st.markdown("""
-            <div style="background: linear-gradient(90deg, #2E86AB 0%, #3498DB 100%); 
-                       padding: 1rem; border-radius: 10px; text-align: center; color: white; margin-bottom: 0.5rem;">
-                <h3 style="margin: 0; font-size: 1.2rem;">🔥 Trabajos Frecuentes</h3>
-                <h2 style="margin: 0.2rem 0; font-size: 2rem; font-weight: bold;">{}</h2>
-                <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">Más de 10 ejecuciones</p>
-            </div>
-            """.format(int(metrics['trabajos_frecuentes'])), unsafe_allow_html=True)
-        
-        with col4:
-            eficiencia_global = metrics['placas_totales'] / (tiempo_total_horas * 60) if tiempo_total_horas > 0 else 0
+            eficiencia_global = metrics['placas_totales'] / (metrics['tiempo_total_segundos'] / 60) if metrics['tiempo_total_segundos'] > 0 else 0
             st.markdown("""
             <div style="background: linear-gradient(90deg, #85C1E9 0%, #5DADE2 100%); 
                        padding: 1rem; border-radius: 10px; text-align: center; color: white; margin-bottom: 0.5rem;">
@@ -942,10 +774,10 @@ def show_jobs_analysis():
     
     if not trabajos_data.empty:
         # ==================== SECCIÓN 4: ANÁLISIS VISUAL ====================
-        st.subheader(f"📈 Top {min(15, len(trabajos_data))} Trabajos - Análisis Visual")
+        st.subheader(f"📈 Top {top_n} Trabajos - Análisis Visual")
         
-        # Truncar nombres largos para mejor visualización
-        display_trabajos = trabajos_data.head(15).copy()
+        # Truncar nombres largos para mejor visualización - usar todos los datos obtenidos
+        display_trabajos = trabajos_data.copy()
         display_trabajos['trabajo_key_short'] = display_trabajos['job_key'].str[-30:]
         display_trabajos['duracion_min'] = display_trabajos['duracion_promedio_seg'] / 60
         display_trabajos['tiempo_total_min'] = display_trabajos['tiempo_total_seg'] / 60
@@ -953,7 +785,10 @@ def show_jobs_analysis():
         col1, col2 = st.columns(2)
         
         with col1:
-            fig_top_trabajos = px.bar(display_trabajos, 
+            # Ordenar en orden descendente para gráfico
+            display_trabajos_sorted = display_trabajos.sort_values('total_placas', ascending=True)  # ascending=True para que se vea descendente en horizontal
+            
+            fig_top_trabajos = px.bar(display_trabajos_sorted, 
                                  x='total_placas', 
                                  y='trabajo_key_short',
                                  orientation='h',
@@ -972,7 +807,10 @@ def show_jobs_analysis():
             st.plotly_chart(fig_top_trabajos, use_container_width=True)
         
         with col2:
-            fig_duration = px.bar(display_trabajos, 
+            # Ordenar por duración también
+            display_trabajos_dur_sorted = display_trabajos.sort_values('duracion_min', ascending=True)
+            
+            fig_duration = px.bar(display_trabajos_dur_sorted, 
                                  x='duracion_min', 
                                  y='trabajo_key_short',
                                  orientation='h',
@@ -1022,7 +860,7 @@ def show_jobs_analysis():
         
         with col2:
             # Gráfico de eficiencia pura
-            top_efficiency_trabajos = display_trabajos.nlargest(15, 'eficiencia_placas_min')
+            top_efficiency_trabajos = display_trabajos.nlargest(len(display_trabajos), 'eficiencia_placas_min').sort_values('eficiencia_placas_min', ascending=True)  # Para orden descendente visual
             fig_efficiency = px.bar(
                 top_efficiency_trabajos,
                 x='eficiencia_placas_min',
