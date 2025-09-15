@@ -577,6 +577,9 @@ def show_thickness_analysis():
         col1, col2 = st.columns(2)
         
         with col1:
+            # Calcular eficiencia para el gráfico
+            thickness_data['eficiencia_placas_min'] = thickness_data['total_placas'] / (thickness_data['tiempo_total_seg'] / 60)
+            
             # Gráfico de eficiencia (placas por minuto)
             fig_placas_min = px.bar(thickness_data, x='espesor_mm', y='eficiencia_placas_min',
                                    title='🚀 Eficiencia: Placas por Minuto',
