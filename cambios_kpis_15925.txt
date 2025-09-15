@@ -1,0 +1,26 @@
+"Pestaña Análisis de Producción:
+- Cambiar subtítulo card "Placas procesadas".
+- Quitar promedio placas/día
+- Cambiar título card "Tiempo total" por "Tiempo total de trabajo". Quitar de la misma card el subtítulo "Span completo".
+- Agregar al card de "Productividad" un desplegable de qué significa y cómo se calcula.
+- Quitar card "Trabajos Únicos".
+- Agregar desplegables que expliquen los gráficos de dispersión de relaciones entre indicadores.
+
+Pestaña Análisis por Espesores:
+- Quitar card de material más rápido.
+- Quitar card de "Tiempo total"
+- Quitar card de "Más Variable"
+- Quitar card de "Mejor aprovechamiento". Es buena la idea pero erróneo el cálculo.
+- Quitar card "Diversidad de Trabajos".
+- En todos los gráficos de barras verticales, para el eje X (Espesor (mm)), agregar todos los números indicadores del eje.
+- En la sección "Métricas Avanzadas por Material" el gráfico de "Aprovechamiento: Placas por Corte", reemplazar la palabra "Corte" por "Esquema".
+- En la tabla de detalle completo por material, la columna "Total Cortes" renombrarla a "Total Esquemas". Ídem para la columna "Placas/Corte", cambiar a "Placas/Esquema".
+
+Pestaña Análisis por Trabajos:
+- Quitar card "Tiempo total trabajos".
+- Quitar card "Duración Promedio".
+- Quitar card "Trabajo Más Grande".
+- Quitar card "Trabajos Únicos".
+- Quitar card "Trabajos Frecuentes".
+- Repasar sección Top 15 Trabajos - Análisis visual, presenta múltiples errores, como: mostrar top no aparece el número 15 (en configuración); el orden (de ser por Total Placas), debería ser al revés de como está actualmente, quiero que sea en orden descendente; ídem gráfico "Trabajos Más Eficientes (placas/min)".
+

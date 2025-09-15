@@ -133,18 +133,18 @@ def main():
     st.sidebar.title("📊 Navegación")
     page = st.sidebar.selectbox(
         "Seleccionar vista:",
-        ["📈 Análisis de Producción", "⚡ Análisis por Espesores", "🔧 Análisis por Trabajos"]
+        ["📈 Análisis de producción", "⚡ Análisis por espesores", "🔧 Análisis por trabajos"]
     )
     
-    if page == "📈 Análisis de Producción":
+    if page == "📈 Análisis de producción":
         show_production_analysis()
-    elif page == "⚡ Análisis por Espesores":
+    elif page == "⚡ Análisis por espesores":
         show_thickness_analysis()
-    elif page == "🔧 Análisis por Trabajos":
+    elif page == "🔧 Análisis por trabajos":
         show_jobs_analysis()
 
 def show_production_analysis():
-    st.header("📈 Análisis de Producción")
+    st.header("📈 Análisis de producción")
     
     # Filtro de fechas en sidebar
     with st.sidebar:
@@ -153,7 +153,7 @@ def show_production_analysis():
         fecha_fin = st.date_input("Fecha fin", value=datetime(2025, 8, 13), key="production_end")
     
     # ==================== SECCIÓN 1: KPIs EJECUTIVOS ====================
-    st.subheader("📊 Indicadores Ejecutivos del Período")
+    st.subheader("📊 Indicadores ejecutivos del período")
     
     # KPIs principales corregidos según lógica de negocio LCDC
     col1, col2, col3, col4 = st.columns(4)
@@ -211,13 +211,13 @@ def show_production_analysis():
                 st.markdown("""
                 <div style="background: linear-gradient(90deg, #1B4F72 0%, #2E86AB 100%); 
                            padding: 1rem; border-radius: 10px; text-align: center; color: white; margin-bottom: 0.5rem;">
-                    <h3 style="margin: 0; font-size: 1.2rem;">🔧 Total Esquemas</h3>
+                    <h3 style="margin: 0; font-size: 1.2rem;">🔧 Total esquemas</h3>
                     <h2 style="margin: 0.2rem 0; font-size: 2rem; font-weight: bold;">{:,}</h2>
                     <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">Programas ejecutados</p>
                 </div>
                 """.format(int(data['total_esquemas'])), unsafe_allow_html=True)
             create_kpi_explanation(
-                "Total Esquemas",
+                "Total esquemas",
                 "Cada esquema representa un programa de corte específico. Un esquema puede procesar una o varias placas según el diseño."
             )
         
@@ -226,7 +226,7 @@ def show_production_analysis():
                 st.markdown("""
                 <div style="background: linear-gradient(90deg, #2E86AB 0%, #5DADE2 100%); 
                            padding: 1rem; border-radius: 10px; text-align: center; color: white; margin-bottom: 0.5rem;">
-                    <h3 style="margin: 0; font-size: 1.2rem;">📦 Placas Procesadas</h3>
+                    <h3 style="margin: 0; font-size: 1.2rem;">📦 Placas procesadas</h3>
                     <h2 style="margin: 0.2rem 0; font-size: 2rem; font-weight: bold;">{:,}</h2>
                     <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">Unidades procesadas</p>
                 </div>
@@ -237,7 +237,7 @@ def show_production_analysis():
                 st.markdown("""
                 <div style="background: linear-gradient(90deg, #5DADE2 0%, #85C1E9 100%); 
                            padding: 1rem; border-radius: 10px; text-align: center; color: white; margin-bottom: 0.5rem;">
-                    <h3 style="margin: 0; font-size: 1.2rem;">⚪ Placas Blancas 18mm</h3>
+                    <h3 style="margin: 0; font-size: 1.2rem;">⚪ Placas blancas 18mm</h3>
                     <h2 style="margin: 0.2rem 0; font-size: 2rem; font-weight: bold;">{:,}</h2>
                     <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">Material específico</p>
                 </div>
@@ -253,7 +253,7 @@ def show_production_analysis():
                 st.markdown("""
                 <div style="background: linear-gradient(90deg, #2980B9 0%, #1B4F72 100%); 
                            padding: 1rem; border-radius: 10px; text-align: center; color: white; margin-bottom: 0.5rem;">
-                    <h3 style="margin: 0; font-size: 1.2rem;">⏱️ Min/Esquema</h3>
+                    <h3 style="margin: 0; font-size: 1.2rem;">⏱️ Min/esquema</h3>
                     <h2 style="margin: 0.2rem 0; font-size: 2rem; font-weight: bold;">{:.1f}</h2>
                     <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">min promedio</p>
                 </div>
@@ -266,7 +266,7 @@ def show_production_analysis():
                            padding: 1rem; border-radius: 10px; text-align: center; color: white; margin-bottom: 0.5rem;">
                     <h3 style="margin: 0; font-size: 1.2rem;">🕐 Tiempo total de trabajo</h3>
                     <h2 style="margin: 0.2rem 0; font-size: 2rem; font-weight: bold;">{}</h2>
-                    <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">Solo trabajando</p>
+                    <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">Máquina encendida</p>
                 </div>
                 """.format(format_time_duration(tiempo['tiempo_total_productivo_segundos'])), unsafe_allow_html=True)
         
@@ -295,7 +295,7 @@ def show_production_analysis():
                 st.markdown("""
                 <div style="background: linear-gradient(90deg, #154360 0%, #1B4F72 100%); 
                            padding: 1rem; border-radius: 10px; text-align: center; color: white; margin-bottom: 0.5rem;">
-                    <h3 style="margin: 0; font-size: 1.2rem;">📉 Tiempo Improductivo</h3>
+                    <h3 style="margin: 0; font-size: 1.2rem;">📉 Tiempo improductivo</h3>
                     <h2 style="margin: 0.2rem 0; font-size: 2rem; font-weight: bold;">{:.1f}%</h2>
                     <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">Paradas/Esperas</p>
                 </div>
@@ -318,7 +318,7 @@ def show_production_analysis():
                 st.markdown("""
                 <div style="background: linear-gradient(90deg, #3498DB 0%, #2E86AB 100%); 
                            padding: 1rem; border-radius: 10px; text-align: center; color: white; margin-bottom: 0.5rem;">
-                    <h3 style="margin: 0; font-size: 1.2rem;">📅 Días Activos</h3>
+                    <h3 style="margin: 0; font-size: 1.2rem;">📅 Días activos</h3>
                     <h2 style="margin: 0.2rem 0; font-size: 2rem; font-weight: bold;">{}</h2>
                     <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">Con producción</p>
                 </div>
@@ -326,7 +326,7 @@ def show_production_analysis():
             
         # ==================== SECCIÓN 2: ANÁLISIS POR MATERIAL ====================
         st.markdown("---")
-        st.subheader("📏 Análisis por Tipos de Material (Espesores)")
+        st.subheader("📏 Análisis por tipos de material (Espesores)")
         
         thickness_summary = load_data(f"""
             SELECT 
@@ -349,7 +349,7 @@ def show_production_analysis():
                     thickness_summary, 
                     values='total_placas', 
                     names='espesor_mm',
-                    title='📊 Distribución de Placas por Espesor',
+                    title='📊 Distribución de placas por espesor',
                     color_discrete_sequence=[COLORS['primary'], COLORS['secondary'], COLORS['accent'], COLORS['success'], COLORS['info'], COLORS['dark']]
                 )
                 fig_pie.update_traces(textposition='inside', textinfo='percent+label')
@@ -369,7 +369,7 @@ def show_production_analysis():
                     thickness_summary, 
                     x='espesor_mm', 
                     y='duracion_min',
-                    title='⏱️ Tiempo Promedio por Esquema según Espesor',
+                    title='⏱️ Tiempo promedio por esquema según espesor',
                     labels={'espesor_mm': 'Espesor (mm)', 'duracion_min': 'Tiempo Promedio (min)'},
                     color='duracion_min',
                     color_continuous_scale=[[0, COLORS['accent']], [1, COLORS['primary']]]
@@ -386,7 +386,7 @@ def show_production_analysis():
         
         # ==================== SECCIÓN 3: ANÁLISIS DE RELACIONES ====================
         st.markdown("---")
-        st.subheader("🔍 Análisis de Relaciones Entre Indicadores")
+        st.subheader("🔍 Análisis de relaciones entre indicadores")
         create_kpi_explanation(
             "Gráficos de Dispersión",
             "Estos gráficos muestran relaciones entre variables del proceso productivo. El primer gráfico relaciona las horas productivas diarias con la eficiencia (placas/hora), donde el tamaño de cada punto representa el total de placas procesadas. El segundo gráfico relaciona el número de esquemas ejecutados con las placas totales procesadas, donde el tamaño indica las horas productivas."
@@ -422,7 +422,7 @@ def show_production_analysis():
                     x='tiempo_productivo_horas', 
                     y='placas_por_hora',
                     size='total_placas',
-                    title='🔄 Tiempo Productivo vs Eficiencia',
+                    title='🔄 Tiempo productivo vs Eficiencia',
                     labels={
                         'tiempo_productivo_horas': 'Horas Productivas', 
                         'placas_por_hora': 'Placas/Hora',
@@ -447,7 +447,7 @@ def show_production_analysis():
                     x='total_esquemas',
                     y='total_placas',
                     size='tiempo_productivo_horas',
-                    title='📊 Esquemas vs Placas Procesadas',
+                    title='📊 Esquemas vs Placas procesadas',
                     labels={
                         'total_esquemas': 'Total Esquemas',
                         'total_placas': 'Total Placas',
@@ -468,15 +468,15 @@ def show_production_analysis():
         st.warning("⚠️ No hay datos para el período seleccionado")
 
 def show_thickness_analysis():
-    st.header("⚡ Análisis por Espesores de Material")
+    st.header("⚡ Análisis por espesores de material")
     create_kpi_explanation(
-        "Análisis por Espesores",
+        "Análisis por espesores",
         "Comparación detallada del rendimiento de la máquina según el tipo de material procesado. Cada espesor tiene características diferentes que afectan los tiempos de corte y la eficiencia."
     )
     
     # Filtro de fechas en sidebar
     with st.sidebar:
-        st.markdown("### 📅 Filtros de Fecha - Espesores")
+        st.markdown("### 📅 Filtros de fecha - espesores")
         fecha_inicio_esp = st.date_input("Fecha inicio", value=datetime(2025, 7, 1), key="thickness_start")
         fecha_fin_esp = st.date_input("Fecha fin", value=datetime(2025, 8, 13), key="thickness_end")
         
@@ -515,7 +515,7 @@ def show_thickness_analysis():
             st.markdown("""
             <div style="background: linear-gradient(90deg, #1B4F72 0%, #2E86AB 100%); 
                        padding: 1rem; border-radius: 10px; text-align: center; color: white; margin-bottom: 0.5rem;">
-                <h3 style="margin: 0; font-size: 1.2rem;">📏 Tipos de Material</h3>
+                <h3 style="margin: 0; font-size: 1.2rem;">📏 Tipos de material</h3>
                 <h2 style="margin: 0.2rem 0; font-size: 2rem; font-weight: bold;">{}</h2>
                 <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">Espesores diferentes</p>
             </div>
@@ -527,7 +527,7 @@ def show_thickness_analysis():
             st.markdown("""
             <div style="background: linear-gradient(90deg, #2E86AB 0%, #5DADE2 100%); 
                        padding: 1rem; border-radius: 10px; text-align: center; color: white; margin-bottom: 0.5rem;">
-                <h3 style="margin: 0; font-size: 1.2rem;">🏆 Material Principal</h3>
+                <h3 style="margin: 0; font-size: 1.2rem;">🏆 Material principal</h3>
                 <h2 style="margin: 0.2rem 0; font-size: 2rem; font-weight: bold;">{} mm</h2>
                 <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">{:,} placas</p>
             </div>
@@ -535,13 +535,13 @@ def show_thickness_analysis():
         
         # ==================== SECCIÓN 2: ANÁLISIS COMPARATIVO ====================
         st.markdown("---")
-        st.subheader("📊 Análisis Comparativo por Material")
+        st.subheader("📊 Análisis comparativo por material")
         
         col1, col2 = st.columns(2)
         
         with col1:
             fig_volume = px.bar(thickness_data, x='espesor_mm', y='total_placas',
-                               title='📊 Total de Placas por Espesor',
+                               title='📊 Total de placas por espesor',
                                labels={'espesor_mm': 'Espesor (mm)', 'total_placas': 'Total Placas'},
                                color='total_placas',
                                color_continuous_scale=[[0, COLORS['accent']], [1, COLORS['primary']]])
@@ -557,7 +557,7 @@ def show_thickness_analysis():
         
         with col2:
             fig_efficiency = px.bar(thickness_data, x='espesor_mm', y='duracion_promedio_seg',
-                                   title='⏱️ Duración Promedio por Espesor',
+                                   title='⏱️ Duración promedio por espesor',
                                    labels={'espesor_mm': 'Espesor (mm)', 'duracion_promedio_seg': 'Segundos'},
                                    color='duracion_promedio_seg',
                                    color_continuous_scale=[[0, COLORS['info']], [1, COLORS['secondary']]])
@@ -572,7 +572,7 @@ def show_thickness_analysis():
             st.plotly_chart(fig_efficiency, use_container_width=True)
         
         # ==================== SECCIÓN 3: ANÁLISIS AVANZADO ====================
-        st.subheader("🔍 Métricas Avanzadas por Material")
+        st.subheader("🔍 Métricas avanzadas por material")
         
         col1, col2 = st.columns(2)
         
@@ -582,7 +582,7 @@ def show_thickness_analysis():
             
             # Gráfico de eficiencia (placas por minuto)
             fig_placas_min = px.bar(thickness_data, x='espesor_mm', y='eficiencia_placas_min',
-                                   title='🚀 Eficiencia: Placas por Minuto',
+                                   title='🚀 Eficiencia: placas por minuto',
                                    labels={'espesor_mm': 'Espesor (mm)', 'eficiencia_placas_min': 'Placas/min'},
                                    color='eficiencia_placas_min',
                                    color_continuous_scale=[[0, COLORS['info']], [1, COLORS['primary']]])
@@ -602,7 +602,7 @@ def show_thickness_analysis():
             thickness_data['placas_por_esquema'] = thickness_data['total_placas'] / thickness_data['total_cortes']
             
             fig_aprovechamiento = px.bar(thickness_data, x='espesor_mm', y='placas_por_esquema',
-                                        title='📈 Aprovechamiento: Placas por Esquema',
+                                        title='📈 Aprovechamiento: Placas por esquema',
                                         labels={'espesor_mm': 'Espesor (mm)', 'placas_por_esquema': 'Placas/Esquema'},
                                         color='placas_por_esquema',
                                         color_continuous_scale=[[0, COLORS['info']], [1, COLORS['primary']]])
@@ -617,7 +617,7 @@ def show_thickness_analysis():
             st.plotly_chart(fig_aprovechamiento, use_container_width=True)
         
         # ==================== SECCIÓN 4: TABLA DETALLADA ====================
-        st.subheader("📋 Detalle Completo por Material")
+        st.subheader("📋 Detalle completo por material")
         
         # Preparar datos para la tabla
         display_data = thickness_data.copy()
@@ -642,7 +642,7 @@ def show_thickness_analysis():
         st.warning("No hay datos de espesores disponibles")
 
 def show_jobs_analysis():
-    st.header("🔧 Análisis por Trabajos")
+    st.header("🔧 Análisis por trabajos")
     create_kpi_explanation(
         "Análisis por Trabajos",
         "Análisis detallado de cada tipo de trabajo procesado en la máquina. Cada 'trabajo' representa un diseño o tipo de corte específico que puede repetirse en múltiples esquemas."
@@ -659,7 +659,7 @@ def show_jobs_analysis():
         st.info(f"📊 Período: {dias_periodo_trabajos} días")
     
     # ==================== SECCIÓN 1: KPIs GLOBALES DE TRABAJOS ====================
-    st.subheader("📊 KPIs de Trabajos")
+    st.subheader("📊 KPIs de trabajos")
     
     # Consulta para métricas globales de trabajos con filtro de fecha
     global_trabajos_data = load_data(f"""
@@ -701,7 +701,7 @@ def show_jobs_analysis():
             st.markdown("""
             <div style="background: linear-gradient(90deg, #1B4F72 0%, #2E86AB 100%); 
                        padding: 1rem; border-radius: 10px; text-align: center; color: white; margin-bottom: 0.5rem;">
-                <h3 style="margin: 0; font-size: 1.2rem;">🔧 Total Trabajos Únicos</h3>
+                <h3 style="margin: 0; font-size: 1.2rem;">🔧 Total trabajos únicos</h3>
                 <h2 style="margin: 0.2rem 0; font-size: 2rem; font-weight: bold;">{:,}</h2>
                 <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">Diseños diferentes</p>
             </div>
@@ -712,7 +712,7 @@ def show_jobs_analysis():
             st.markdown("""
             <div style="background: linear-gradient(90deg, #85C1E9 0%, #5DADE2 100%); 
                        padding: 1rem; border-radius: 10px; text-align: center; color: white; margin-bottom: 0.5rem;">
-                <h3 style="margin: 0; font-size: 1.2rem;">🚀 Eficiencia Global</h3>
+                <h3 style="margin: 0; font-size: 1.2rem;">🚀 Eficiencia global</h3>
                 <h2 style="margin: 0.2rem 0; font-size: 2rem; font-weight: bold;">{:.1f}</h2>
                 <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">placas/min total</p>
             </div>
@@ -720,7 +720,7 @@ def show_jobs_analysis():
     
     # ==================== SECCIÓN 2: FILTROS Y CONFIGURACIÓN ====================
     st.markdown("---")
-    st.subheader("🔍 Configuración de Análisis")
+    st.subheader("🔍 Configuración de análisis")
     
     col1, col2, col3 = st.columns(3)
     with col1:
@@ -777,7 +777,7 @@ def show_jobs_analysis():
     
     if not trabajos_data.empty:
         # ==================== SECCIÓN 4: ANÁLISIS VISUAL ====================
-        st.subheader(f"📈 Top {top_n} Trabajos - Análisis Visual")
+        st.subheader(f"📈 Top {top_n} trabajos - análisis visual")
         
         # Truncar nombres largos para mejor visualización - usar todos los datos obtenidos
         display_trabajos = trabajos_data.copy()
@@ -795,7 +795,7 @@ def show_jobs_analysis():
                                  x='total_placas', 
                                  y='trabajo_key_short',
                                  orientation='h',
-                                 title=f'📆 Top Trabajos por Total de Placas',
+                                 title=f'📆 Top trabajos por total de placas',
                                  labels={'total_placas': 'Total Placas', 'trabajo_key_short': 'Trabajo'},
                                  color='total_placas',
                                  color_continuous_scale=[[0, COLORS['accent']], [1, COLORS['primary']]])
@@ -817,7 +817,7 @@ def show_jobs_analysis():
                                  x='duracion_min', 
                                  y='trabajo_key_short',
                                  orientation='h',
-                                 title='⏱️ Duración Promedio por Corte (min)',
+                                 title='⏱️ Duración promedio por corte (min)',
                                  labels={'duracion_min': 'Duración Promedio (min)', 'trabajo_key_short': 'Trabajo'},
                                  color='duracion_min',
                                  color_continuous_scale=[[0, COLORS['info']], [1, COLORS['secondary']]])
@@ -832,7 +832,7 @@ def show_jobs_analysis():
             st.plotly_chart(fig_duration, use_container_width=True)
         
         # ==================== SECCIÓN 5: ANÁLISIS DE EFICIENCIA Y PATRONES ====================
-        st.subheader("🔍 Análisis de Eficiencia y Patrones")
+        st.subheader("🔍 Análisis de eficiencia y patrones")
         
         col1, col2 = st.columns(2)
         
@@ -869,7 +869,7 @@ def show_jobs_analysis():
                 x='eficiencia_placas_min',
                 y='trabajo_key_short',
                 orientation='h',
-                title='🚀 Trabajos Más Eficientes (placas/min)',
+                title='🚀 Trabajos más eficientes (placas/min)',
                 labels={'eficiencia_placas_min': 'Placas por Minuto', 'trabajo_key_short': 'Trabajo'},
                 color='eficiencia_placas_min',
                 color_continuous_scale=[[0, COLORS['accent']], [1, COLORS['primary']]]
@@ -885,7 +885,7 @@ def show_jobs_analysis():
             st.plotly_chart(fig_efficiency, use_container_width=True)
         
         # ==================== SECCIÓN 6: TABLA DETALLADA CON TODAS LAS MÉTRICAS ====================
-        st.subheader("📋 Tabla Detallada de Trabajos")
+        st.subheader("📋 Tabla detallada de trabajos")
         
         # Preparar datos para la tabla
         table_data = trabajos_data.copy()
@@ -910,7 +910,7 @@ def show_jobs_analysis():
         )
         
         # ==================== SECCIÓN 7: RESUMEN ESTADÍSTICO ====================
-        st.subheader("📊 Resumen Estadístico de los Trabajos Seleccionados")
+        st.subheader("📊 Resumen estadístico de los trabajos seleccionados")
         
         col1, col2, col3, col4 = st.columns(4)
         

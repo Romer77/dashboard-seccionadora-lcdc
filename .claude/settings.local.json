@@ -9,7 +9,13 @@
       "Bash(git init:*)",
       "Bash(touch:*)",
       "Bash(git add:*)",
-      "Bash(psql:*)"
+      "Bash(psql:*)",
+      "Bash(git commit:*)",
+      "Bash(pip cache:*)",
+      "Bash(pip uninstall:*)",
+      "Bash(pip install:*)",
+      "Bash(py:*)",
+      "Bash(git push:*)"
     ],
     "defaultMode": "acceptEdits"
   }
